@@ -24,6 +24,8 @@ const filterTabs: Array<{ id: ToolFilter; label: string }> = [
   { id: 'installed', label: 'Installed' },
   { id: 'available', label: 'Available' },
 ]
+const surfaceInteractiveClasses = 'transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000]'
+const surfacePressedClasses = 'translate-x-0.5 translate-y-0.5 shadow-[2px_2px_0_0_#000]'
 
 function App() {
   const [activeFilter, setActiveFilter] = useState<ToolFilter>('all')
@@ -95,10 +97,10 @@ function App() {
                 onClick={() => setActiveFilter(tab.id)}
                 aria-pressed={isActive}
                 className={`
-                  px-4 py-2 font-black uppercase text-sm border-2 border-ink transition-colors
+                  px-4 py-2 font-black uppercase text-sm border-2 border-ink
                   ${isActive
-                    ? 'bg-ink text-canvas'
-                    : 'bg-white text-ink shadow-[2px_2px_0_0_#000] cursor-pointer hover:bg-gray-100'}
+                    ? `bg-ink text-canvas ${surfacePressedClasses}`
+                    : `bg-white text-ink shadow-brutal cursor-pointer ${surfaceInteractiveClasses}`}
                 `}
               >
                 {tab.label}
@@ -116,10 +118,10 @@ function App() {
                 key={tool.id}
                 onClick={() => toggleSelect(tool.id)}
                 className={`
-                  group cursor-pointer border-4 border-ink p-5 flex flex-col transition-all w-[280px] min-h-[190px] relative overflow-hidden
+                  group cursor-pointer border-4 border-ink p-5 flex flex-col w-[280px] min-h-[190px] relative overflow-hidden
                   ${tool.selected 
-                    ? 'bg-accent-lime translate-x-0.5 translate-y-0.5 shadow-[2px_2px_0_0_#000]' 
-                    : 'bg-white shadow-brutal hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]'}
+                    ? `bg-accent-lime ${surfacePressedClasses}` 
+                    : `bg-white shadow-brutal ${surfaceInteractiveClasses}`}
                 `}
               >
                 {/* Status Badge overlay */}
@@ -187,9 +189,9 @@ function App() {
           <button 
             disabled={!canInstall}
             className={`
-              w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg transition-all
+              w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
               ${canInstall 
-                ? 'bg-accent-lime shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none' 
+                ? `bg-accent-lime shadow-brutal ${surfaceInteractiveClasses}` 
                 : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
             `}
           >
@@ -199,9 +201,9 @@ function App() {
           <button 
             disabled={!canUninstall}
             className={`
-              w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg transition-all
+              w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
               ${canUninstall 
-                ? 'bg-accent-magenta text-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none' 
+                ? `bg-accent-magenta text-white shadow-brutal ${surfaceInteractiveClasses}` 
                 : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
             `}
           >
@@ -211,7 +213,7 @@ function App() {
 
         <div className="mt-auto pt-4 border-t-2 border-ink border-dashed">
           <button
-            className="w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none flex items-center justify-center gap-3"
+            className={`w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal flex items-center justify-center gap-3 ${surfaceInteractiveClasses}`}
           >
             <span>Terminal</span>
             <img src={terminalIcon} alt="" aria-hidden="true" className="w-5 h-5 object-contain" />
