@@ -5,17 +5,17 @@ interface Tool {
   name: string
   icon: string
   version: string | null
+  description: string
   selected: boolean
 }
 
 function App() {
   const [tools, setTools] = useState<Tool[]>([
-    { id: 'nodejs', name: 'Node.js', icon: '🟢', version: '20.11.0', selected: false },
-    { id: 'python', name: 'Python', icon: '🐍', version: '3.12.2', selected: false },
-    { id: 'git', name: 'Git', icon: '🔀', version: '2.44.0', selected: false },
-    { id: 'claude', name: 'Claude Code', icon: '🤖', version: null, selected: false },
-    { id: 'codex', name: 'Codex', icon: '📖', version: null, selected: false },
-    { id: 'terminal', name: 'Terminal', icon: '🐚', version: 'Zsh', selected: false },
+    { id: 'nodejs', name: 'Node.js', icon: '🟢', version: '20.11.0', description: 'JavaScript runtime for backend dev', selected: false },
+    { id: 'python', name: 'Python', icon: '🐍', version: '3.12.2', description: 'High-level programming language', selected: false },
+    { id: 'git', name: 'Git', icon: '🔀', version: '2.44.0', description: 'Distributed version control system', selected: false },
+    { id: 'claude', name: 'Claude Code', icon: '🤖', version: null, description: 'Anthropic CLI for agentic coding', selected: false },
+    { id: 'codex', name: 'Codex', icon: '📖', version: null, description: 'Documentation and knowledge base', selected: false },
   ])
 
   const toggleSelect = (id: string) => {
@@ -25,82 +25,100 @@ function App() {
   const selectedTools = tools.filter(t => t.selected)
   const selectedCount = selectedTools.length
   
-  // Uninstall is enabled only when ALL selected items are currently installed (version is not null)
   const canUninstall = selectedCount > 0 && selectedTools.every(t => t.version !== null)
   const canInstall = selectedCount > 0
 
   return (
-    <main className="min-h-screen bg-canvas text-ink font-display flex flex-col md:flex-row border-ink">
+    <main className="h-screen bg-canvas text-ink font-sans flex border-ink overflow-hidden select-none">
       
       {/* Main Section (80%) */}
-      <section className="w-full md:w-4/5 p-8 flex flex-col gap-8 overflow-y-auto">
-        <header className="flex items-center gap-6">
-          <div className="w-20 h-20 bg-accent-lime border-4 border-ink shadow-brutal flex items-center justify-center text-4xl font-bold transition-transform hover:-rotate-3">
+      <section className="w-[80%] p-8 flex flex-col gap-8 overflow-y-auto border-r-4 border-ink">
+        <header className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-accent-lime border-4 border-ink shadow-brutal flex items-center justify-center text-4xl font-black transition-transform hover:scale-105">
             WK
           </div>
           <div>
-            <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">WhiteKit</h1>
-            <p className="font-mono text-sm bg-ink text-canvas inline-block px-2 py-1 mt-2">
-              Hard Brutalist Dev Environment Manager
+            <h1 className="text-5xl font-black uppercase tracking-tight leading-none">WhiteKit</h1>
+            <p className="font-mono text-xs bg-ink text-canvas inline-block px-2 py-0.5 mt-2 font-bold">
+              CONTROL_SURFACE // RESIDENCY_THEME
             </p>
           </div>
         </header>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* Card Grid with Flexbox magic */}
+        <div className="flex flex-wrap gap-5">
           {tools.map((tool) => (
             <div 
               key={tool.id}
               onClick={() => toggleSelect(tool.id)}
               className={`
-                group cursor-pointer border-4 border-ink p-6 flex items-center gap-6 transition-all
+                group cursor-pointer border-4 border-ink p-5 flex flex-col gap-4 transition-all w-[280px] min-h-[160px]
                 ${tool.selected 
                   ? 'bg-accent-lime translate-x-1 translate-y-1 shadow-none' 
                   : 'bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg'}
               `}
             >
-              <div className="text-5xl">{tool.icon}</div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-black uppercase tracking-tight">{tool.name}</h3>
-                <p className="text-xs font-mono font-bold uppercase opacity-70">
-                  {tool.version ? `v${tool.version}` : 'Not Installed'}
-                </p>
+              {/* HStack { VStack { icon, name }, VStack { status } } */}
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col">
+                  <div className="text-4xl">{tool.icon}</div>
+                  <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-2">{tool.name}</h3>
+                </div>
+                
+                <div className="flex flex-col items-end gap-2">
+                  {/* Checkbox */}
+                  <div className={`w-6 h-6 border-4 border-ink flex items-center justify-center ${tool.selected ? 'bg-ink' : 'bg-white'}`}>
+                    {tool.selected && <div className="w-2.5 h-2.5 bg-accent-lime"></div>}
+                  </div>
+                  <div className="text-right">
+                    <p className={`text-xs font-mono font-black uppercase ${tool.version ? 'text-ink' : 'text-accent-magenta'}`}>
+                      {tool.version ? `v${tool.version}` : 'Missing'}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className={`w-10 h-10 border-4 border-ink flex items-center justify-center font-black text-xl ${tool.selected ? 'bg-ink text-canvas' : 'bg-white'}`}>
-                {tool.selected ? '✓' : ''}
-              </div>
+
+              {/* Solid Brutalist Line */}
+              <div className="h-1 bg-ink w-full mt-auto"></div>
+
+              {/* Description */}
+              <p className="text-xs font-medium leading-tight opacity-90 h-8 overflow-hidden line-clamp-2">
+                {tool.description}
+              </p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Right Section (20%) - Serious Status & Actions */}
-      <aside className="w-full md:w-1/5 border-t-4 md:border-t-0 md:border-l-4 border-ink p-8 flex flex-col gap-8 bg-white">
+      {/* Right Section (25%) */}
+      <aside className="w-[25%] p-8 flex flex-col gap-8 bg-white min-w-[300px]">
         <div>
-          <h2 className="text-xs font-mono font-black uppercase tracking-[0.2em] mb-4 border-b-2 border-ink pb-2">Network Architecture</h2>
+          <h2 className="text-xs font-mono font-black uppercase tracking-widest mb-4 border-b-4 border-ink pb-2 italic">Network_Link</h2>
           <div className="flex items-center gap-3 p-3 border-4 border-ink bg-accent-lime shadow-brutal">
-            <div className="w-4 h-4 bg-ink animate-pulse"></div>
-            <span className="text-sm font-black uppercase">Status: Online</span>
+            <div className="w-4 h-4 bg-ink animate-[pulse_1s_infinite]"></div>
+            <span className="text-sm font-black uppercase tracking-tight">System Online</span>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
-          <h2 className="text-xs font-mono font-black uppercase tracking-[0.2em] mb-2">Core Commands</h2>
+        <div className="flex flex-col gap-4 flex-1">
+          <h2 className="text-xs font-mono font-black uppercase tracking-widest mb-2 italic">Operations</h2>
+          
           <button 
             disabled={!canInstall}
             className={`
-              w-full py-5 px-2 border-4 border-ink font-black uppercase tracking-widest text-xl transition-all
+              w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg transition-all
               ${canInstall 
                 ? 'bg-accent-lime shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none' 
                 : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
             `}
           >
-            Deploy ({selectedCount})
+            Deploy
           </button>
           
           <button 
             disabled={!canUninstall}
             className={`
-              w-full py-5 px-2 border-4 border-ink font-black uppercase tracking-widest text-xl transition-all
+              w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg transition-all
               ${canUninstall 
                 ? 'bg-accent-magenta text-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none' 
                 : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
@@ -108,14 +126,25 @@ function App() {
           >
             Purge
           </button>
+
+          <div className="mt-4 pt-4 border-t-2 border-ink border-dashed">
+            <button 
+              className="w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none group flex items-center justify-center gap-2"
+            >
+              <span className="text-xl">🐚</span>
+              <span>Terminal</span>
+            </button>
+          </div>
         </div>
 
         <div className="mt-auto">
-          <h3 className="text-xs font-mono font-black uppercase mb-3">System Log</h3>
-          <div className="border-4 border-ink p-4 bg-ink text-accent-lime font-mono text-[10px] leading-tight shadow-brutal">
-            {selectedCount > 0 
-              ? `> QUEUED: ${selectedTools.map(t => t.name.toUpperCase()).join(', ')}\n> READY FOR DEPLOYMENT...` 
-              : '> SYSTEM IDLE\n> STANDING BY...'}
+          <h3 className="text-xs font-mono font-black uppercase mb-3 border-b-2 border-ink pb-1">Telemetry</h3>
+          <div className="border-4 border-ink p-4 bg-ink text-accent-lime font-mono text-[10px] leading-tight shadow-brutal h-24 overflow-hidden">
+            <p className="animate-[pulse_2s_infinite]">
+              {selectedCount > 0 
+                ? `> INIT_QUEUE\n> TARGETS: ${selectedCount}\n> READY_FOR_SIGNAL...` 
+                : '> SYSTEM_IDLE\n> STANDING_BY\n> NO_OPERATIONS_PENDING'}
+            </p>
           </div>
         </div>
       </aside>

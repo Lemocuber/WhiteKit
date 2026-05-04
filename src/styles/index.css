@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
-  --font-mono: "Space Mono", monospace;
+  --font-sans: "Geist Sans", "Inter", system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Space Mono", monospace;
   
   --color-canvas: #f0f0f0;
   --color-ink: #000000;
@@ -20,7 +20,7 @@
 :root {
   color: var(--color-ink);
   background-color: var(--color-canvas);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
