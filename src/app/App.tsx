@@ -5,6 +5,7 @@ import codexIcon from '../assets/tools/codex.svg'
 import gitIcon from '../assets/tools/git.svg'
 import nodejsIcon from '../assets/tools/nodejs.svg'
 import pythonIcon from '../assets/tools/python.svg'
+import terminalIcon from '../assets/tools/terminal.svg'
 
 interface Tool {
   id: string
@@ -33,10 +34,9 @@ function App() {
   }
 
   const selectedTools = tools.filter(t => t.selected)
-  const selectedCount = selectedTools.length
-  
-  const allSelectedInstalled = selectedCount > 0 && selectedTools.every(t => t.version !== null)
-  const allSelectedMissing = selectedCount > 0 && selectedTools.every(t => t.version === null)
+
+  const allSelectedInstalled = selectedTools.length > 0 && selectedTools.every(t => t.version !== null)
+  const allSelectedMissing = selectedTools.length > 0 && selectedTools.every(t => t.version === null)
   
   const canUninstall = allSelectedInstalled
   const canInstall = allSelectedMissing
@@ -91,7 +91,7 @@ function App() {
                 </div>
 
                 {/* Main Content */}
-                <div className="flex justify-between items-start mt-2 relative z-10">
+                <div className="flex justify-between items-start relative z-10">
                   <div className="flex flex-col">
                     <img src={tool.iconSrc} alt="" aria-hidden="true" className="w-14 h-14 object-contain" />
                     <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-3">{tool.name}</h3>
@@ -142,7 +142,7 @@ function App() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 flex-1">
+        <div className="flex flex-col gap-4">
           <h2 className="text-xs font-mono font-black uppercase tracking-widest mb-2 italic">Operations</h2>
           
           <button 
@@ -168,26 +168,15 @@ function App() {
           >
             Uninstall
           </button>
-
-          <div className="mt-4 pt-4 border-t-2 border-ink border-dashed">
-            <button 
-              className="w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none group flex items-center justify-center gap-2"
-            >
-              <span className="text-xl">🐚</span>
-              <span>Terminal</span>
-            </button>
-          </div>
         </div>
 
-        <div className="mt-auto">
-          <h3 className="text-xs font-mono font-black uppercase mb-3 border-b-2 border-ink pb-1">Telemetry</h3>
-          <div className="border-4 border-ink p-4 bg-ink text-accent-lime font-mono text-[10px] leading-tight shadow-brutal h-24 overflow-hidden">
-            <p className="animate-[pulse_2s_infinite]">
-              {selectedCount > 0 
-                ? `> INIT_QUEUE\n> TARGETS: ${selectedCount}\n> READY_FOR_SIGNAL...` 
-                : '> SYSTEM_IDLE\n> STANDING_BY\n> NO_OPERATIONS_PENDING'}
-            </p>
-          </div>
+        <div className="mt-auto pt-4 border-t-2 border-ink border-dashed">
+          <button
+            className="w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none flex items-center justify-center gap-3"
+          >
+            <span>Terminal</span>
+            <img src={terminalIcon} alt="" aria-hidden="true" className="w-5 h-5 object-contain" />
+          </button>
         </div>
       </aside>
     </main>
