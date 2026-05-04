@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Instrument Serif', serif;
+  --font-ui: 'Manrope', sans-serif;
+  --color-canvas: #efe6d8;
+  --color-ink: #26211d;
+  --color-muted: #64574d;
+  --color-line: rgba(38, 33, 29, 0.14);
+  --color-accent: #9f4f21;
+}
+
+:root {
+  color: var(--color-ink);
+  background:
+    linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(239, 230, 216, 0.98)),
+    var(--color-canvas);
+  font-family: var(--font-ui);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  background: var(--color-canvas);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+code {
+  font-family: 'SF Mono', 'Roboto Mono', ui-monospace, monospace;
+}
+
+#root {
+  min-height: 100vh;
+}
