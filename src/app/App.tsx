@@ -15,63 +15,57 @@ function App() {
     { id: 'git', name: 'Git', icon: '🔀', version: '2.44.0', selected: false },
     { id: 'claude', name: 'Claude Code', icon: '🤖', version: null, selected: false },
     { id: 'codex', name: 'Codex', icon: '📖', version: null, selected: false },
+    { id: 'terminal', name: 'Terminal', icon: '🐚', version: 'Zsh', selected: false },
   ])
 
   const toggleSelect = (id: string) => {
     setTools(tools.map(t => t.id === id ? { ...t, selected: !t.selected } : t))
   }
 
-  const selectedCount = tools.filter(t => t.selected).length
+  const selectedTools = tools.filter(t => t.selected)
+  const selectedCount = selectedTools.length
+  
+  // Uninstall is enabled only when ALL selected items are currently installed (version is not null)
+  const canUninstall = selectedCount > 0 && selectedTools.every(t => t.version !== null)
+  const canInstall = selectedCount > 0
 
   return (
     <main className="min-h-screen bg-canvas text-ink font-display flex flex-col md:flex-row border-ink">
-      {/* Left Section (20%) */}
-      <aside className="w-full md:w-1/5 border-b-4 md:border-b-0 md:border-r-4 border-ink p-6 flex flex-col gap-8">
-        <div className="flex flex-col gap-4">
-          <div className="w-16 h-16 bg-accent-yellow border-4 border-ink shadow-brutal flex items-center justify-center text-3xl font-bold">
+      
+      {/* Main Section (80%) */}
+      <section className="w-full md:w-4/5 p-8 flex flex-col gap-8 overflow-y-auto">
+        <header className="flex items-center gap-6">
+          <div className="w-20 h-20 bg-accent-lime border-4 border-ink shadow-brutal flex items-center justify-center text-4xl font-bold transition-transform hover:-rotate-3">
             WK
           </div>
           <div>
-            <h1 className="text-2xl font-black uppercase tracking-tighter">WhiteKit</h1>
-            <p className="text-xs font-mono uppercase">Dev Env Manager</p>
+            <h1 className="text-5xl font-black uppercase tracking-tighter leading-none">WhiteKit</h1>
+            <p className="font-mono text-sm bg-ink text-canvas inline-block px-2 py-1 mt-2">
+              Hard Brutalist Dev Environment Manager
+            </p>
           </div>
-        </div>
-
-        <div className="mt-auto pt-8 border-t-2 border-ink">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-accent-green border-2 border-ink"></div>
-            <span className="text-xs font-black uppercase tracking-widest">Network: Online</span>
-          </div>
-        </div>
-      </aside>
-
-      {/* Middle Section (60%) */}
-      <section className="w-full md:w-3/5 p-6 flex flex-col gap-6 overflow-y-auto">
-        <header className="mb-4">
-          <h2 className="text-4xl font-black uppercase italic tracking-tight">Main Experience</h2>
-          <p className="font-mono text-sm bg-ink text-canvas inline-block px-2 py-1 mt-2">
-            Select tools to manage your environment
-          </p>
         </header>
 
-        <div className="grid gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {tools.map((tool) => (
             <div 
               key={tool.id}
               onClick={() => toggleSelect(tool.id)}
               className={`
-                group cursor-pointer border-4 border-ink p-4 flex items-center gap-4 transition-all
-                ${tool.selected ? 'bg-accent-blue translate-x-1 translate-y-1 shadow-none' : 'bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg'}
+                group cursor-pointer border-4 border-ink p-6 flex items-center gap-6 transition-all
+                ${tool.selected 
+                  ? 'bg-accent-lime translate-x-1 translate-y-1 shadow-none' 
+                  : 'bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg'}
               `}
             >
-              <div className="text-4xl">{tool.icon}</div>
+              <div className="text-5xl">{tool.icon}</div>
               <div className="flex-1">
-                <h3 className="text-xl font-black uppercase">{tool.name}</h3>
-                <p className="text-xs font-mono">
+                <h3 className="text-2xl font-black uppercase tracking-tight">{tool.name}</h3>
+                <p className="text-xs font-mono font-bold uppercase opacity-70">
                   {tool.version ? `v${tool.version}` : 'Not Installed'}
                 </p>
               </div>
-              <div className={`w-8 h-8 border-4 border-ink flex items-center justify-center font-black ${tool.selected ? 'bg-ink text-canvas' : 'bg-white'}`}>
+              <div className={`w-10 h-10 border-4 border-ink flex items-center justify-center font-black text-xl ${tool.selected ? 'bg-ink text-canvas' : 'bg-white'}`}>
                 {tool.selected ? '✓' : ''}
               </div>
             </div>
@@ -79,36 +73,49 @@ function App() {
         </div>
       </section>
 
-      {/* Right Section (20%) */}
-      <aside className="w-full md:w-1/5 border-t-4 md:border-t-0 md:border-l-4 border-ink p-6 flex flex-col gap-6">
-        <h2 className="text-xl font-black uppercase tracking-tighter border-b-4 border-ink pb-2">Actions</h2>
-        
+      {/* Right Section (20%) - Serious Status & Actions */}
+      <aside className="w-full md:w-1/5 border-t-4 md:border-t-0 md:border-l-4 border-ink p-8 flex flex-col gap-8 bg-white">
+        <div>
+          <h2 className="text-xs font-mono font-black uppercase tracking-[0.2em] mb-4 border-b-2 border-ink pb-2">Network Architecture</h2>
+          <div className="flex items-center gap-3 p-3 border-4 border-ink bg-accent-lime shadow-brutal">
+            <div className="w-4 h-4 bg-ink animate-pulse"></div>
+            <span className="text-sm font-black uppercase">Status: Online</span>
+          </div>
+        </div>
+
         <div className="flex flex-col gap-4">
+          <h2 className="text-xs font-mono font-black uppercase tracking-[0.2em] mb-2">Core Commands</h2>
           <button 
-            disabled={selectedCount === 0}
+            disabled={!canInstall}
             className={`
-              w-full py-4 px-2 border-4 border-ink font-black uppercase tracking-widest text-lg transition-all
-              ${selectedCount > 0 
-                ? 'bg-accent-green shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none' 
-                : 'bg-gray-300 opacity-50 cursor-not-allowed'}
+              w-full py-5 px-2 border-4 border-ink font-black uppercase tracking-widest text-xl transition-all
+              ${canInstall 
+                ? 'bg-accent-lime shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none' 
+                : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
             `}
           >
-            Install ({selectedCount})
+            Deploy ({selectedCount})
           </button>
           
           <button 
-            className="w-full py-4 px-2 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none"
+            disabled={!canUninstall}
+            className={`
+              w-full py-5 px-2 border-4 border-ink font-black uppercase tracking-widest text-xl transition-all
+              ${canUninstall 
+                ? 'bg-accent-magenta text-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-none' 
+                : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
+            `}
           >
-            Uninstall
+            Purge
           </button>
         </div>
 
-        <div className="mt-8">
-          <h3 className="text-xs font-mono uppercase mb-2">Status</h3>
-          <div className="border-4 border-ink p-4 bg-ink text-canvas font-mono text-xs">
+        <div className="mt-auto">
+          <h3 className="text-xs font-mono font-black uppercase mb-3">System Log</h3>
+          <div className="border-4 border-ink p-4 bg-ink text-accent-lime font-mono text-[10px] leading-tight shadow-brutal">
             {selectedCount > 0 
-              ? `Waiting to install ${selectedCount} items...` 
-              : 'System idle. Ready for command.'}
+              ? `> QUEUED: ${selectedTools.map(t => t.name.toUpperCase()).join(', ')}\n> READY FOR DEPLOYMENT...` 
+              : '> SYSTEM IDLE\n> STANDING BY...'}
           </div>
         </div>
       </aside>

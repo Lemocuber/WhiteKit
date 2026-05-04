@@ -4,15 +4,15 @@
   --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
   --font-mono: "Space Mono", monospace;
   
-  --color-canvas: #ffffff;
+  --color-canvas: #f0f0f0;
   --color-ink: #000000;
-  --color-accent-yellow: #facc15;
-  --color-accent-green: #22c55e;
-  --color-accent-red: #ef4444;
+  --color-accent-lime: #ccff00;
+  --color-accent-magenta: #ff00ff;
   --color-accent-blue: #3b82f6;
   
   --shadow-brutal: 4px 4px 0px 0px #000000;
   --shadow-brutal-lg: 8px 8px 0px 0px #000000;
+  --shadow-lime: 8px 8px 0px 0px #ccff00;
   
   --border-width-brutal: 4px;
 }
