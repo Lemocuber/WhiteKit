@@ -25,14 +25,20 @@ function App() {
   const selectedTools = tools.filter(t => t.selected)
   const selectedCount = selectedTools.length
   
-  const canUninstall = selectedCount > 0 && selectedTools.every(t => t.version !== null)
-  const canInstall = selectedCount > 0
+  const allSelectedInstalled = selectedCount > 0 && selectedTools.every(t => t.version !== null)
+  const allSelectedMissing = selectedCount > 0 && selectedTools.every(t => t.version === null)
+  
+  const canUninstall = allSelectedInstalled
+  const canInstall = allSelectedMissing
+
+  // Compute what the primary action should say based on selection
+  let deployText = 'Deploy'
 
   return (
     <main className="h-screen bg-canvas text-ink font-sans flex border-ink overflow-hidden select-none">
       
       {/* Main Section (80%) */}
-      <section className="w-[80%] p-8 flex flex-col gap-8 overflow-y-auto border-r-4 border-ink">
+      <section className="w-[80%] p-8 flex flex-col gap-8 overflow-y-auto border-r-4 border-ink relative">
         <header className="flex items-center gap-4">
           <div className="w-16 h-16 bg-accent-lime border-4 border-ink shadow-brutal flex items-center justify-center text-4xl font-black transition-transform hover:scale-105">
             WK
@@ -45,53 +51,79 @@ function App() {
           </div>
         </header>
 
+        {/* Filters/Tabs (Visual only for now, but provides structural framing) */}
+        <div className="flex gap-4 border-b-4 border-ink pb-4">
+          <div className="bg-ink text-canvas px-4 py-2 font-black uppercase text-sm border-2 border-ink">All Tools</div>
+          <div className="bg-white text-ink px-4 py-2 font-black uppercase text-sm border-2 border-ink shadow-[2px_2px_0_0_#000] cursor-pointer hover:bg-gray-100 transition-colors">Installed</div>
+          <div className="bg-white text-ink px-4 py-2 font-black uppercase text-sm border-2 border-ink shadow-[2px_2px_0_0_#000] cursor-pointer hover:bg-gray-100 transition-colors">Available</div>
+        </div>
+
         {/* Card Grid with Flexbox magic */}
-        <div className="flex flex-wrap gap-5">
-          {tools.map((tool) => (
-            <div 
-              key={tool.id}
-              onClick={() => toggleSelect(tool.id)}
-              className={`
-                group cursor-pointer border-4 border-ink p-5 flex flex-col gap-4 transition-all w-[280px] min-h-[160px]
-                ${tool.selected 
-                  ? 'bg-accent-lime translate-x-1 translate-y-1 shadow-none' 
-                  : 'bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg'}
-              `}
-            >
-              {/* HStack { VStack { icon, name }, VStack { status } } */}
-              <div className="flex justify-between items-start">
-                <div className="flex flex-col">
-                  <div className="text-4xl">{tool.icon}</div>
-                  <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-2">{tool.name}</h3>
+        <div className="flex flex-wrap gap-6 pb-8">
+          {tools.map((tool) => {
+            const isInstalled = tool.version !== null;
+            return (
+              <div 
+                key={tool.id}
+                onClick={() => toggleSelect(tool.id)}
+                className={`
+                  group cursor-pointer border-4 border-ink p-5 flex flex-col transition-all w-[280px] min-h-[190px] relative overflow-hidden
+                  ${tool.selected 
+                    ? 'bg-accent-lime translate-x-1 translate-y-1 shadow-none' 
+                    : 'bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg'}
+                `}
+              >
+                {/* Status Badge overlay */}
+                <div className="absolute top-0 right-0 z-10">
+                   <div className={`text-[10px] font-mono font-black px-2 py-1 uppercase tracking-widest border-b-4 border-l-4 border-ink flex items-center gap-1.5 transition-colors ${isInstalled ? 'bg-accent-lime text-ink' : 'bg-accent-magenta text-white'}`}>
+                     {isInstalled ? `v${tool.version}` : 'Uninstalled'}
+                   </div>
                 </div>
-                
-                <div className="flex flex-col items-end gap-2">
-                  {/* Checkbox */}
-                  <div className={`w-6 h-6 border-4 border-ink flex items-center justify-center ${tool.selected ? 'bg-ink' : 'bg-white'}`}>
-                    {tool.selected && <div className="w-2.5 h-2.5 bg-accent-lime"></div>}
+
+                {/* Main Content */}
+                <div className="flex justify-between items-start mt-2 relative z-10">
+                  <div className="flex flex-col">
+                    <div className="text-4xl">{tool.icon}</div>
+                    <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-3">{tool.name}</h3>
                   </div>
-                  <div className="text-right">
-                    <p className={`text-xs font-mono font-black uppercase ${tool.version ? 'text-ink' : 'text-accent-magenta'}`}>
-                      {tool.version ? `v${tool.version}` : 'Missing'}
-                    </p>
+                </div>
+
+                {/* Description */}
+                <p className="text-xs font-medium leading-tight opacity-90 h-8 overflow-hidden line-clamp-2 mt-4 relative z-10">
+                  {tool.description}
+                </p>
+
+                {/* Bottom Bar: Checkbox moved here */}
+                <div className="mt-auto pt-3 flex justify-between items-center relative z-10 text-ink">
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-0">Spacer</span>
+                  {/* Checkbox */}
+                  <div className="w-6 h-6 border-4 border-ink bg-white flex items-center justify-center">
+                    {tool.selected && (
+                      <svg
+                        viewBox="0 0 16 16"
+                        aria-hidden="true"
+                        className="w-3.5 h-3.5"
+                      >
+                        <path
+                          d="M3 8.5L6.5 12L13 4.5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="square"
+                          strokeLinejoin="miter"
+                        />
+                      </svg>
+                    )}
                   </div>
                 </div>
               </div>
-
-              {/* Solid Brutalist Line */}
-              <div className="h-1 bg-ink w-full mt-auto"></div>
-
-              {/* Description */}
-              <p className="text-xs font-medium leading-tight opacity-90 h-8 overflow-hidden line-clamp-2">
-                {tool.description}
-              </p>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
 
-      {/* Right Section (25%) */}
-      <aside className="w-[25%] p-8 flex flex-col gap-8 bg-white min-w-[300px]">
+      {/* Right Section (20%) */}
+      <aside className="w-[20%] p-8 flex flex-col gap-8 bg-white border-l-4 border-ink min-w-[300px]">
         <div>
           <h2 className="text-xs font-mono font-black uppercase tracking-widest mb-4 border-b-4 border-ink pb-2 italic">Network_Link</h2>
           <div className="flex items-center gap-3 p-3 border-4 border-ink bg-accent-lime shadow-brutal">
@@ -112,7 +144,7 @@ function App() {
                 : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
             `}
           >
-            Deploy
+            {deployText}
           </button>
           
           <button 
@@ -124,7 +156,7 @@ function App() {
                 : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
             `}
           >
-            Purge
+            Uninstall
           </button>
 
           <div className="mt-4 pt-4 border-t-2 border-ink border-dashed">
