@@ -16,9 +16,17 @@ interface Tool {
   selected: boolean
 }
 
+type ToolFilter = 'all' | 'installed' | 'available'
+
 const brandIconSrc = '/brand/whitekit.svg'
+const filterTabs: Array<{ id: ToolFilter; label: string }> = [
+  { id: 'all', label: 'All Tools' },
+  { id: 'installed', label: 'Installed' },
+  { id: 'available', label: 'Available' },
+]
 
 function App() {
+  const [activeFilter, setActiveFilter] = useState<ToolFilter>('all')
   const [tools, setTools] = useState<Tool[]>([
     { id: 'nodejs', name: 'Node.js', iconSrc: nodejsIcon, version: '20.11.0', description: 'JavaScript runtime for backend dev', selected: false },
     { id: 'python', name: 'Python', iconSrc: pythonIcon, version: '3.12.2', description: 'High-level programming language', selected: false },
@@ -32,6 +40,18 @@ function App() {
       tool.id === id ? { ...tool, selected: !tool.selected } : tool
     )))
   }
+
+  const filteredTools = tools.filter((tool) => {
+    if (activeFilter === 'installed') {
+      return tool.version !== null
+    }
+
+    if (activeFilter === 'available') {
+      return tool.version === null
+    }
+
+    return true
+  })
 
   const selectedTools = tools.filter(t => t.selected)
 
@@ -61,16 +81,33 @@ function App() {
           </div>
         </header>
 
-        {/* Filters/Tabs (Visual only for now, but provides structural framing) */}
+        {/* Filters/Tabs */}
         <div className="flex gap-4 border-b-4 border-ink pb-4">
-          <div className="bg-ink text-canvas px-4 py-2 font-black uppercase text-sm border-2 border-ink">All Tools</div>
-          <div className="bg-white text-ink px-4 py-2 font-black uppercase text-sm border-2 border-ink shadow-[2px_2px_0_0_#000] cursor-pointer hover:bg-gray-100 transition-colors">Installed</div>
-          <div className="bg-white text-ink px-4 py-2 font-black uppercase text-sm border-2 border-ink shadow-[2px_2px_0_0_#000] cursor-pointer hover:bg-gray-100 transition-colors">Available</div>
+          {filterTabs.map((tab) => {
+            const isActive = tab.id === activeFilter
+
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveFilter(tab.id)}
+                aria-pressed={isActive}
+                className={`
+                  px-4 py-2 font-black uppercase text-sm border-2 border-ink transition-colors
+                  ${isActive
+                    ? 'bg-ink text-canvas'
+                    : 'bg-white text-ink shadow-[2px_2px_0_0_#000] cursor-pointer hover:bg-gray-100'}
+                `}
+              >
+                {tab.label}
+              </button>
+            )
+          })}
         </div>
 
         {/* Card Grid with Flexbox magic */}
         <div className="flex flex-wrap gap-6 pb-8">
-          {tools.map((tool) => {
+          {filteredTools.map((tool) => {
             const isInstalled = tool.version !== null;
             return (
               <div 
