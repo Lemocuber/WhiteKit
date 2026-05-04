@@ -1,50 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap');
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
-  --font-display: 'Instrument Serif', serif;
-  --font-ui: 'Manrope', sans-serif;
-  --color-canvas: #efe6d8;
-  --color-ink: #26211d;
-  --color-muted: #64574d;
-  --color-line: rgba(38, 33, 29, 0.14);
-  --color-accent: #9f4f21;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-mono: "Space Mono", monospace;
+  
+  --color-canvas: #ffffff;
+  --color-ink: #000000;
+  --color-accent-yellow: #facc15;
+  --color-accent-green: #22c55e;
+  --color-accent-red: #ef4444;
+  --color-accent-blue: #3b82f6;
+  
+  --shadow-brutal: 4px 4px 0px 0px #000000;
+  --shadow-brutal-lg: 8px 8px 0px 0px #000000;
+  
+  --border-width-brutal: 4px;
 }
 
 :root {
   color: var(--color-ink);
-  background:
-    linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(239, 230, 216, 0.98)),
-    var(--color-canvas);
-  font-family: var(--font-ui);
+  background-color: var(--color-canvas);
+  font-family: var(--font-display);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-html {
-  background: var(--color-canvas);
-}
-
 body {
   margin: 0;
-  min-width: 320px;
+  min-height: 100vh;
 }
 
 * {
   box-sizing: border-box;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
-
-code {
-  font-family: 'SF Mono', 'Roboto Mono', ui-monospace, monospace;
+  border-color: var(--color-ink);
 }
 
 #root {
