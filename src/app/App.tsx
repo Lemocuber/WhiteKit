@@ -72,7 +72,7 @@ function App() {
     <main className="h-screen bg-canvas text-ink font-sans flex border-ink overflow-hidden select-none">
       
       {/* Main Section (80%) */}
-      <section className="w-[80%] p-8 flex flex-col gap-8 overflow-y-auto border-r-4 border-ink relative">
+      <section className="w-[80%] min-h-0 p-8 flex flex-col overflow-hidden border-r-4 border-ink relative">
         <header className="flex items-center gap-4">
           <div className="w-16 h-16 bg-accent-lime border-4 border-ink shadow-brutal flex items-center justify-center p-2 transition-transform hover:scale-105">
             <img src={brandIconSrc} alt="WhiteKit" className="w-full h-full object-contain" />
@@ -86,7 +86,7 @@ function App() {
         </header>
 
         {/* Filters/Tabs */}
-        <div className="flex gap-4 border-b-4 border-ink pb-4">
+        <div className="mt-8 flex gap-4 border-b-4 border-ink pb-4">
           {filterTabs.map((tab) => {
             const isActive = tab.id === activeFilter
 
@@ -110,66 +110,70 @@ function App() {
         </div>
 
         {/* Card Grid with Flexbox magic */}
-        <div className="flex flex-wrap gap-6 pb-8">
-          {filteredTools.map((tool) => {
-            const isInstalled = tool.version !== null;
-            return (
-              <div 
-                key={tool.id}
-                onClick={() => toggleSelect(tool.id)}
-                className={`
-                  group cursor-pointer border-4 border-ink p-5 flex flex-col w-[280px] min-h-[190px] relative overflow-hidden
-                  ${tool.selected 
-                    ? `bg-accent-lime ${surfacePressedClasses}` 
-                    : `bg-white shadow-brutal ${surfaceInteractiveClasses}`}
-                `}
-              >
-                {/* Status Badge overlay */}
-                <div className="absolute top-0 right-0 z-10">
-                   <div className={`text-[10px] font-mono font-black px-2 py-1 tracking-widest border-b-4 border-l-4 border-ink flex items-center gap-1.5 transition-colors ${isInstalled ? 'bg-accent-lime text-ink normal-case' : 'bg-accent-magenta text-white uppercase'}`}>
-                     {isInstalled ? `v${tool.version}` : 'not installed'}
-                   </div>
-                </div>
+        <div className="min-h-0 flex-1">
+          <div className="h-full overflow-y-auto pr-2">
+            <div className="flex flex-wrap content-start gap-6 pt-6 pb-8">
+            {filteredTools.map((tool) => {
+              const isInstalled = tool.version !== null
+              return (
+                <div
+                  key={tool.id}
+                  onClick={() => toggleSelect(tool.id)}
+                  className={`
+                    group cursor-pointer border-4 border-ink p-5 flex flex-col w-[280px] min-h-[190px] relative overflow-hidden
+                    ${tool.selected
+                      ? `bg-accent-lime ${surfacePressedClasses}`
+                      : `bg-white shadow-brutal ${surfaceInteractiveClasses}`}
+                  `}
+                >
+                  {/* Status Badge overlay */}
+                  <div className="absolute top-0 right-0 z-10">
+                    <div className={`text-[10px] font-mono font-black px-2 py-1 tracking-widest border-b-4 border-l-4 border-ink flex items-center gap-1.5 transition-colors ${isInstalled ? 'bg-accent-lime text-ink normal-case' : 'bg-accent-magenta text-white uppercase'}`}>
+                      {isInstalled ? `v${tool.version}` : 'not installed'}
+                    </div>
+                  </div>
 
-                {/* Main Content */}
-                <div className="flex justify-between items-start relative z-10">
-                  <div className="flex flex-col">
-                    <img src={tool.iconSrc} alt="" aria-hidden="true" className="w-14 h-14 object-contain" />
-                    <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-3">{tool.name}</h3>
+                  {/* Main Content */}
+                  <div className="flex justify-between items-start relative z-10">
+                    <div className="flex flex-col">
+                      <img src={tool.iconSrc} alt="" aria-hidden="true" className="w-14 h-14 object-contain" />
+                      <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-3">{tool.name}</h3>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-xs font-medium leading-tight opacity-90 h-8 overflow-hidden line-clamp-2 mt-4 relative z-10">
+                    {tool.description}
+                  </p>
+
+                  {/* Bottom Bar: Checkbox moved here */}
+                  <div className="mt-auto pt-3 flex justify-between items-center relative z-10 text-ink">
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-0">Spacer</span>
+                    {/* Checkbox */}
+                    <div className="w-6 h-6 border-4 border-ink bg-white flex items-center justify-center">
+                      {tool.selected && (
+                        <svg
+                          viewBox="0 0 16 16"
+                          aria-hidden="true"
+                          className="w-3.5 h-3.5"
+                        >
+                          <path
+                            d="M3 8.5L6.5 12L13 4.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="square"
+                            strokeLinejoin="miter"
+                          />
+                        </svg>
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                {/* Description */}
-                <p className="text-xs font-medium leading-tight opacity-90 h-8 overflow-hidden line-clamp-2 mt-4 relative z-10">
-                  {tool.description}
-                </p>
-
-                {/* Bottom Bar: Checkbox moved here */}
-                <div className="mt-auto pt-3 flex justify-between items-center relative z-10 text-ink">
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-0">Spacer</span>
-                  {/* Checkbox */}
-                  <div className="w-6 h-6 border-4 border-ink bg-white flex items-center justify-center">
-                    {tool.selected && (
-                      <svg
-                        viewBox="0 0 16 16"
-                        aria-hidden="true"
-                        className="w-3.5 h-3.5"
-                      >
-                        <path
-                          d="M3 8.5L6.5 12L13 4.5"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="3"
-                          strokeLinecap="square"
-                          strokeLinejoin="miter"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
+              )
+            })}
+            </div>
+          </div>
         </div>
       </section>
 
