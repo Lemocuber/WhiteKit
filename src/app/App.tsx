@@ -54,6 +54,8 @@ function App() {
   })
 
   const selectedTools = tools.filter(t => t.selected)
+  const selectedInstalledCount = selectedTools.filter(t => t.version !== null).length
+  const selectedMissingCount = selectedTools.filter(t => t.version === null).length
 
   const allSelectedInstalled = selectedTools.length > 0 && selectedTools.every(t => t.version !== null)
   const allSelectedMissing = selectedTools.length > 0 && selectedTools.every(t => t.version === null)
@@ -61,8 +63,8 @@ function App() {
   const canUninstall = allSelectedInstalled
   const canInstall = allSelectedMissing
 
-  // Compute what the primary action should say based on selection
-  const deployText = 'Deploy'
+  const installText = canInstall ? `Install (${selectedMissingCount})` : 'Install'
+  const removeText = canUninstall ? `Remove (${selectedInstalledCount})` : 'Remove'
 
   return (
     <main className="h-screen bg-canvas text-ink font-sans flex border-ink overflow-hidden select-none">
@@ -116,14 +118,14 @@ function App() {
                 className={`
                   group cursor-pointer border-4 border-ink p-5 flex flex-col transition-all w-[280px] min-h-[190px] relative overflow-hidden
                   ${tool.selected 
-                    ? 'bg-accent-lime translate-x-1 translate-y-1 shadow-none' 
-                    : 'bg-white shadow-brutal hover:-translate-x-1 hover:-translate-y-1 hover:shadow-brutal-lg'}
+                    ? 'bg-accent-lime translate-x-0.5 translate-y-0.5 shadow-[2px_2px_0_0_#000]' 
+                    : 'bg-white shadow-brutal hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000]'}
                 `}
               >
                 {/* Status Badge overlay */}
                 <div className="absolute top-0 right-0 z-10">
-                   <div className={`text-[10px] font-mono font-black px-2 py-1 uppercase tracking-widest border-b-4 border-l-4 border-ink flex items-center gap-1.5 transition-colors ${isInstalled ? 'bg-accent-lime text-ink' : 'bg-accent-magenta text-white'}`}>
-                     {isInstalled ? `v${tool.version}` : 'Uninstalled'}
+                   <div className={`text-[10px] font-mono font-black px-2 py-1 tracking-widest border-b-4 border-l-4 border-ink flex items-center gap-1.5 transition-colors ${isInstalled ? 'bg-accent-lime text-ink normal-case' : 'bg-accent-magenta text-white uppercase'}`}>
+                     {isInstalled ? `v${tool.version}` : 'not installed'}
                    </div>
                 </div>
 
@@ -191,7 +193,7 @@ function App() {
                 : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
             `}
           >
-            {deployText}
+            {installText}
           </button>
           
           <button 
@@ -203,7 +205,7 @@ function App() {
                 : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
             `}
           >
-            Uninstall
+            {removeText}
           </button>
         </div>
 
