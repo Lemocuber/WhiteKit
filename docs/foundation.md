@@ -11,6 +11,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Current stack: Vite, React, TypeScript, Tailwind
 - Backend boundary is deferred to a future `src-tauri/` directory
 - Avoid Rust/Tauri installation on this machine during the frontend phase
+- Tool logos live in `src/assets/tools`; the WhiteKit mark lives in `public/brand/whitekit.svg` and doubles as the favicon
 
 ## Aesthetic & UI Decisions
 
@@ -28,4 +29,3 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - **Component Design**: 
   - Tool Cards feature nested stacks: a horizontal top bar (Icon + Name vs. Checkbox + Version Status), a solid brutalist horizontal separator, and a description block at the bottom.
   - Action Panel (right) prioritizes high-contrast visual cues for network status, pending operations, and a monospace system log.
-

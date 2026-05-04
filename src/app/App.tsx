@@ -1,25 +1,35 @@
 import { useState } from 'react'
 
+import claudeCodeIcon from '../assets/tools/claude-code.svg'
+import codexIcon from '../assets/tools/codex.svg'
+import gitIcon from '../assets/tools/git.svg'
+import nodejsIcon from '../assets/tools/nodejs.svg'
+import pythonIcon from '../assets/tools/python.svg'
+
 interface Tool {
   id: string
   name: string
-  icon: string
+  iconSrc: string
   version: string | null
   description: string
   selected: boolean
 }
 
+const brandIconSrc = '/brand/whitekit.svg'
+
 function App() {
   const [tools, setTools] = useState<Tool[]>([
-    { id: 'nodejs', name: 'Node.js', icon: '🟢', version: '20.11.0', description: 'JavaScript runtime for backend dev', selected: false },
-    { id: 'python', name: 'Python', icon: '🐍', version: '3.12.2', description: 'High-level programming language', selected: false },
-    { id: 'git', name: 'Git', icon: '🔀', version: '2.44.0', description: 'Distributed version control system', selected: false },
-    { id: 'claude', name: 'Claude Code', icon: '🤖', version: null, description: 'Anthropic CLI for agentic coding', selected: false },
-    { id: 'codex', name: 'Codex', icon: '📖', version: null, description: 'Documentation and knowledge base', selected: false },
+    { id: 'nodejs', name: 'Node.js', iconSrc: nodejsIcon, version: '20.11.0', description: 'JavaScript runtime for backend dev', selected: false },
+    { id: 'python', name: 'Python', iconSrc: pythonIcon, version: '3.12.2', description: 'High-level programming language', selected: false },
+    { id: 'git', name: 'Git', iconSrc: gitIcon, version: '2.44.0', description: 'Distributed version control system', selected: false },
+    { id: 'claude', name: 'Claude Code', iconSrc: claudeCodeIcon, version: null, description: 'Anthropic CLI for agentic coding', selected: false },
+    { id: 'codex', name: 'Codex', iconSrc: codexIcon, version: null, description: 'OpenAI CLI for agentic coding', selected: false },
   ])
 
   const toggleSelect = (id: string) => {
-    setTools(tools.map(t => t.id === id ? { ...t, selected: !t.selected } : t))
+    setTools(currentTools => currentTools.map((tool) => (
+      tool.id === id ? { ...tool, selected: !tool.selected } : tool
+    )))
   }
 
   const selectedTools = tools.filter(t => t.selected)
@@ -32,7 +42,7 @@ function App() {
   const canInstall = allSelectedMissing
 
   // Compute what the primary action should say based on selection
-  let deployText = 'Deploy'
+  const deployText = 'Deploy'
 
   return (
     <main className="h-screen bg-canvas text-ink font-sans flex border-ink overflow-hidden select-none">
@@ -40,8 +50,8 @@ function App() {
       {/* Main Section (80%) */}
       <section className="w-[80%] p-8 flex flex-col gap-8 overflow-y-auto border-r-4 border-ink relative">
         <header className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-accent-lime border-4 border-ink shadow-brutal flex items-center justify-center text-4xl font-black transition-transform hover:scale-105">
-            WK
+          <div className="w-16 h-16 bg-accent-lime border-4 border-ink shadow-brutal flex items-center justify-center p-2 transition-transform hover:scale-105">
+            <img src={brandIconSrc} alt="WhiteKit" className="w-full h-full object-contain" />
           </div>
           <div>
             <h1 className="text-5xl font-black uppercase tracking-tight leading-none">WhiteKit</h1>
@@ -83,7 +93,7 @@ function App() {
                 {/* Main Content */}
                 <div className="flex justify-between items-start mt-2 relative z-10">
                   <div className="flex flex-col">
-                    <div className="text-4xl">{tool.icon}</div>
+                    <img src={tool.iconSrc} alt="" aria-hidden="true" className="w-14 h-14 object-contain" />
                     <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-3">{tool.name}</h3>
                   </div>
                 </div>
