@@ -29,7 +29,8 @@ interface PendingProcess {
 
 export function useToolProcessManager(runCommand: ShellRunner = runShell) {
   const [tools, setTools] = useState(createInitialTools)
-  const [isProcessing, setIsProcessing] = useState(false)
+  const [isProcessViewOpen, setIsProcessViewOpen] = useState(false)
+  const [isRunningProcess, setIsRunningProcess] = useState(false)
   const [processType, setProcessType] = useState<ProcessType | null>(null)
   const [taskQueue, setTaskQueue] = useState<ToolId[]>([])
   const [pendingTasks, setPendingTasks] = useState<ToolId[]>([])
@@ -48,7 +49,11 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
 
     for (const toolId of nextQueue) {
       const tool = toolsAtStart.find((item) => item.id === toolId)
-      if (!tool) continue
+      if (!tool) {
+        setPendingTasks((current) => current.slice(1))
+        setFailedTasks((current) => [...current, toolId])
+        continue
+      }
 
       setTools((current) => updateToolState(current, toolId, 'processing', null))
 
@@ -73,15 +78,8 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
       }
     }
 
-    window.setTimeout(() => {
-      setIsProcessing(false)
-      setProcessType(null)
-      setTaskQueue([])
-      setCompletedTasks([])
-      setFailedTasks([])
-      setPendingTasks([])
-      setDots('')
-    }, 2000)
+    setIsRunningProcess(false)
+    setDots('')
   }
 
   useEffect(() => {
@@ -117,14 +115,14 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
   }, [runCommand])
 
   useEffect(() => {
-    if (!isProcessing) return
+    if (!isRunningProcess) return
 
     const intervalId = window.setInterval(() => {
       setDots((value) => (value.length >= 3 ? '' : `${value}.`))
     }, 400)
 
     return () => window.clearInterval(intervalId)
-  }, [isProcessing])
+  }, [isRunningProcess])
 
   useEffect(() => {
     if (!pendingProcess) return
@@ -148,12 +146,12 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
   }, [pendingProcess, runCommand])
 
   const handleToolToggle = (id: ToolId) => {
-    if (isProcessing) return
+    if (isProcessViewOpen) return
     setTools((current) => toggleToolSelection(current, id))
   }
 
   const startProcess = (type: ProcessType) => {
-    if (isProcessing) return
+    if (isProcessViewOpen) return
 
     const selectedIds = tools
       .filter((tool) => tool.selected && (type === 'install' ? !isToolInstalled(tool) : isToolInstalled(tool)))
@@ -164,7 +162,8 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
 
     if (nextQueue.length === 0) return
 
-    setIsProcessing(true)
+    setIsProcessViewOpen(true)
+    setIsRunningProcess(true)
     setProcessType(type)
     setTaskQueue(nextQueue)
     setPendingTasks(nextQueue)
@@ -178,6 +177,20 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
     })
   }
 
+  const dismissProcessView = () => {
+    if (!isProcessViewOpen || isRunningProcess) return
+
+    setIsProcessViewOpen(false)
+    setIsRunningProcess(false)
+    setProcessType(null)
+    setTaskQueue([])
+    setCompletedTasks([])
+    setFailedTasks([])
+    setPendingTasks([])
+    setPendingProcess(null)
+    setDots('')
+  }
+
   const {
     canInstall,
     canUninstall,
@@ -187,12 +200,17 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
 
   return {
     tools,
-    isProcessing,
+    isProcessViewOpen,
+    isRunningProcess,
     processType,
     taskQueue,
     pendingTasks,
     completedTasks,
     failedTasks,
+    isProcessComplete: isProcessViewOpen
+      && !isRunningProcess
+      && taskQueue.length > 0
+      && completedTasks.length + failedTasks.length === taskQueue.length,
     dots,
     canInstall,
     canUninstall,
@@ -200,6 +218,7 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
     removeText: canUninstall ? `Remove (${selectedInstalledCount})` : 'Remove',
     handleToolToggle,
     startProcess,
+    dismissProcessView,
   }
 }
 

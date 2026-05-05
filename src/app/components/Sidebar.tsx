@@ -8,7 +8,8 @@ interface SidebarProps {
   canUninstall: boolean
   dots: string
   installText: string
-  isProcessing: boolean
+  isProcessViewOpen: boolean
+  isRunningProcess: boolean
   processType: ProcessType | null
   removeText: string
   startProcess: (type: ProcessType) => void
@@ -19,7 +20,8 @@ export function Sidebar({
   canUninstall,
   dots,
   installText,
-  isProcessing,
+  isProcessViewOpen,
+  isRunningProcess,
   processType,
   removeText,
   startProcess,
@@ -97,16 +99,16 @@ export function Sidebar({
             <button
               type="button"
               onClick={() => startProcess('remove')}
-              disabled={!canUninstall || isProcessing}
+              disabled={!canUninstall || isProcessViewOpen}
               className={`w-full border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
-                canUninstall && !isProcessing
+                canUninstall && !isProcessViewOpen
                   ? `bg-accent-magenta text-white shadow-brutal ${buttonInteractiveClasses}`
-                  : isProcessing && processType === 'remove'
+                  : isProcessViewOpen && processType === 'remove'
                     ? 'bg-accent-magenta text-white shadow-brutal'
                     : 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
               }`}
             >
-              {isProcessing && processType === 'remove' ? `Removing${dots}` : removeText}
+              {isRunningProcess && processType === 'remove' ? `Removing${dots}` : removeText}
             </button>
           </div>
 
@@ -114,16 +116,16 @@ export function Sidebar({
             <button
               type="button"
               onClick={() => startProcess('install')}
-              disabled={!canInstall || isProcessing}
+              disabled={!canInstall || isProcessViewOpen}
               className={`w-full border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
-                canInstall && !isProcessing
+                canInstall && !isProcessViewOpen
                   ? `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}`
-                  : isProcessing && processType === 'install'
+                  : isProcessViewOpen && processType === 'install'
                     ? 'bg-accent-lime shadow-brutal'
                     : 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
               }`}
             >
-              {isProcessing && processType === 'install' ? `Installing${dots}` : installText}
+              {isRunningProcess && processType === 'install' ? `Installing${dots}` : installText}
             </button>
           </div>
         </div>

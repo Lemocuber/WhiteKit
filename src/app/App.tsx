@@ -10,7 +10,9 @@ function App() {
   const [activeFilter, setActiveFilter] = useState<ToolFilter>('all')
   const {
     tools,
-    isProcessing,
+    isProcessViewOpen,
+    isRunningProcess,
+    isProcessComplete,
     processType,
     taskQueue,
     pendingTasks,
@@ -23,17 +25,20 @@ function App() {
     removeText,
     handleToolToggle,
     startProcess,
+    dismissProcessView,
   } = useToolProcessManager()
   const filteredTools = getFilteredTools(tools, activeFilter)
 
   return (
     <main className="h-screen bg-canvas text-ink font-sans flex border-ink overflow-hidden select-none">
       <section className="w-[80%] min-h-0 p-8 flex flex-col overflow-hidden border-r-4 border-ink relative">
-        {isProcessing && processType ? (
+        {isProcessViewOpen && processType ? (
           <ProcessingView
             completedTasks={completedTasks}
             currentTaskId={pendingTasks[0] ?? null}
             failedTasks={failedTasks}
+            isComplete={isProcessComplete}
+            onOkay={dismissProcessView}
             processType={processType}
             taskQueue={taskQueue}
             tools={tools}
@@ -53,7 +58,8 @@ function App() {
         canUninstall={canUninstall}
         dots={dots}
         installText={installText}
-        isProcessing={isProcessing}
+        isProcessViewOpen={isProcessViewOpen}
+        isRunningProcess={isRunningProcess}
         processType={processType}
         removeText={removeText}
         startProcess={startProcess}
