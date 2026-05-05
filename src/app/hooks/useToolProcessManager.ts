@@ -37,6 +37,51 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
   const [pendingProcess, setPendingProcess] = useState<PendingProcess | null>(null)
   const [dots, setDots] = useState('')
 
+  async function runProcess(
+    type: ProcessType,
+    nextQueue: ToolId[],
+    toolsAtStart: Tool[],
+    commandRunner: ShellRunner,
+  ) {
+    setPendingProcess(null)
+
+    for (const toolId of nextQueue) {
+      const tool = toolsAtStart.find((item) => item.id === toolId)
+      if (!tool) continue
+
+      setTools((current) => updateToolState(current, toolId, 'processing', null))
+
+      const result = await runToolAction(tool, type, commandRunner)
+      const expectedStatus: ToolStatus = type === 'install' ? 'installed' : 'missing'
+      const didFinish = result.status === expectedStatus
+
+      setPendingTasks((current) => current.slice(1))
+      setTools((current) => updateToolState(
+        current,
+        toolId,
+        didFinish ? result.status : 'failed',
+        didFinish ? result.version : null,
+        false,
+      ))
+
+      if (didFinish) {
+        setCompletedTasks((current) => [...current, toolId])
+      } else {
+        setFailedTasks((current) => [...current, toolId])
+      }
+    }
+
+    window.setTimeout(() => {
+      setIsProcessing(false)
+      setProcessType(null)
+      setTaskQueue([])
+      setCompletedTasks([])
+      setFailedTasks([])
+      setPendingTasks([])
+      setDots('')
+    }, 2000)
+  }
+
   useEffect(() => {
     let isCurrent = true
 
@@ -129,51 +174,6 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
       queue: nextQueue,
       toolsAtStart: tools,
     })
-  }
-
-  async function runProcess(
-    type: ProcessType,
-    nextQueue: ToolId[],
-    toolsAtStart: Tool[],
-    commandRunner: ShellRunner,
-  ) {
-    setPendingProcess(null)
-
-    for (const toolId of nextQueue) {
-      const tool = toolsAtStart.find((item) => item.id === toolId)
-      if (!tool) continue
-
-      setTools((current) => updateToolState(current, toolId, 'processing', null))
-
-      const result = await runToolAction(tool, type, commandRunner)
-      const expectedStatus: ToolStatus = type === 'install' ? 'installed' : 'missing'
-      const didFinish = result.status === expectedStatus
-
-      setPendingTasks((current) => current.slice(1))
-      setTools((current) => updateToolState(
-        current,
-        toolId,
-        didFinish ? result.status : 'failed',
-        didFinish ? result.version : null,
-        false,
-      ))
-
-      if (didFinish) {
-        setCompletedTasks((current) => [...current, toolId])
-      } else {
-        setFailedTasks((current) => [...current, toolId])
-      }
-    }
-
-    window.setTimeout(() => {
-      setIsProcessing(false)
-      setProcessType(null)
-      setTaskQueue([])
-      setCompletedTasks([])
-      setFailedTasks([])
-      setPendingTasks([])
-      setDots('')
-    }, 2000)
   }
 
   const {
