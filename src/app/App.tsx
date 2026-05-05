@@ -24,8 +24,9 @@ const filterTabs: Array<{ id: ToolFilter; label: string }> = [
   { id: 'installed', label: 'Installed' },
   { id: 'available', label: 'Available' },
 ]
-const buttonInteractiveClasses = 'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000]'
-const cardInteractiveClasses = 'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000]'
+const hoverHitboxClasses = 'group pt-0.5 pl-0.5 -mt-0.5 -ml-0.5'
+const buttonInteractiveClasses = 'group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:shadow-[6px_6px_0_0_#000] group-active:translate-x-0.5 group-active:translate-y-0.5 group-active:shadow-[2px_2px_0_0_#000]'
+const cardInteractiveClasses = 'group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:shadow-[6px_6px_0_0_#000] group-active:translate-x-0.5 group-active:translate-y-0.5 group-active:shadow-[2px_2px_0_0_#000]'
 const surfacePressedClasses = 'translate-x-0.5 translate-y-0.5 shadow-[2px_2px_0_0_#000]'
 
 function App() {
@@ -127,20 +128,21 @@ function App() {
             const isActive = tab.id === activeFilter
 
             return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveFilter(tab.id)}
-                aria-pressed={isActive}
-                className={`
-                  px-4 py-2 font-black uppercase text-sm border-2 border-ink
-                  ${isActive
-                    ? `bg-ink text-canvas ${surfacePressedClasses}`
-                    : `bg-white text-ink shadow-brutal cursor-pointer ${buttonInteractiveClasses}`}
-                `}
-              >
-                {tab.label}
-              </button>
+              <div key={tab.id} className={hoverHitboxClasses}>
+                <button
+                  type="button"
+                  onClick={() => setActiveFilter(tab.id)}
+                  aria-pressed={isActive}
+                  className={`
+                    px-4 py-2 font-black uppercase text-sm border-2 border-ink
+                    ${isActive
+                      ? `bg-ink text-canvas ${surfacePressedClasses}`
+                      : `bg-white text-ink shadow-brutal cursor-pointer ${buttonInteractiveClasses}`}
+                  `}
+                >
+                  {tab.label}
+                </button>
+              </div>
             )
           })}
         </div>
@@ -152,57 +154,57 @@ function App() {
             {filteredTools.map((tool) => {
               const isInstalled = tool.version !== null
               return (
-                <div
-                  key={tool.id}
-                  onClick={() => toggleSelect(tool.id)}
-                  className={`
-                    group cursor-pointer border-4 border-ink p-5 flex flex-col w-[280px] min-h-[190px] relative overflow-hidden
-                    ${tool.selected
-                      ? `bg-accent-lime ${surfacePressedClasses}`
-                      : `bg-white shadow-brutal ${cardInteractiveClasses}`}
-                  `}
-                >
-                  {/* Status Badge overlay */}
-                  <div className="absolute top-0 right-0 z-10">
-                    <div className={`text-[10px] font-mono font-black px-2 py-1 tracking-widest border-b-4 border-l-4 border-ink flex items-center gap-1.5 transition-colors ${isInstalled ? 'bg-accent-lime text-ink normal-case' : 'bg-accent-magenta text-white uppercase'}`}>
-                      {isInstalled ? `v${tool.version}` : 'not installed'}
+                <div key={tool.id} className={hoverHitboxClasses}>
+                  <div
+                    onClick={() => toggleSelect(tool.id)}
+                    className={`
+                      cursor-pointer border-4 border-ink p-5 flex flex-col w-[280px] min-h-[190px] relative overflow-hidden
+                      ${tool.selected
+                        ? `bg-accent-lime ${surfacePressedClasses}`
+                        : `bg-white shadow-brutal ${cardInteractiveClasses}`}
+                    `}
+                  >
+                    {/* Status Badge overlay */}
+                    <div className="absolute top-0 right-0 z-10">
+                      <div className={`text-[10px] font-mono font-black px-2 py-1 tracking-widest border-b-4 border-l-4 border-ink flex items-center gap-1.5 transition-colors ${isInstalled ? 'bg-accent-lime text-ink normal-case' : 'bg-accent-magenta text-white uppercase'}`}>
+                        {isInstalled ? `v${tool.version}` : 'not installed'}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Main Content */}
-                  <div className="flex justify-between items-start relative z-10">
-                    <div className="flex flex-col">
-                      <img src={tool.iconSrc} alt="" aria-hidden="true" className="w-14 h-14 object-contain" />
-                      <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-3">{tool.name}</h3>
+                    {/* Main Content */}
+                    <div className="flex justify-between items-start relative z-10">
+                      <div className="flex flex-col">
+                        <img src={tool.iconSrc} alt="" aria-hidden="true" className="w-14 h-14 object-contain" />
+                        <h3 className="text-xl font-black uppercase tracking-tight leading-tight mt-3">{tool.name}</h3>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Description */}
-                  <p className="text-xs font-medium leading-tight opacity-90 h-8 overflow-hidden line-clamp-2 mt-4 relative z-10">
-                    {tool.description}
-                  </p>
+                    {/* Description */}
+                    <p className="text-xs font-medium leading-tight opacity-90 h-8 overflow-hidden line-clamp-2 mt-4 relative z-10">
+                      {tool.description}
+                    </p>
 
-                  {/* Bottom Bar: Checkbox moved here */}
-                  <div className="mt-auto pt-3 flex justify-between items-center relative z-10 text-ink">
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-0">Spacer</span>
-                    {/* Checkbox */}
-                    <div className="w-6 h-6 border-4 border-ink bg-white flex items-center justify-center">
-                      {tool.selected && (
-                        <svg
-                          viewBox="0 0 16 16"
-                          aria-hidden="true"
-                          className="w-3.5 h-3.5"
-                        >
-                          <path
-                            d="M3 8.5L6.5 12L13 4.5"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                            strokeLinecap="square"
-                            strokeLinejoin="miter"
-                          />
-                        </svg>
-                      )}
+                    {/* Bottom Bar: Checkbox moved here */}
+                    <div className="mt-auto pt-3 flex justify-between items-center relative z-10 text-ink">
+                      <span className="text-[10px] font-black uppercase tracking-widest opacity-0">Spacer</span>
+                      <div className="w-6 h-6 border-4 border-ink bg-white flex items-center justify-center">
+                        {tool.selected && (
+                          <svg
+                            viewBox="0 0 16 16"
+                            aria-hidden="true"
+                            className="w-3.5 h-3.5"
+                          >
+                            <path
+                              d="M3 8.5L6.5 12L13 4.5"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="square"
+                              strokeLinejoin="miter"
+                            />
+                          </svg>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -249,38 +251,44 @@ function App() {
 
         <div className="mt-auto flex flex-col gap-8">
           <div className="flex flex-col gap-4">
-            <button 
-              disabled={!canInstall}
-              className={`
-                w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
-                ${canInstall 
-                  ? `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}` 
-                  : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
-              `}
-            >
-              {installText}
-            </button>
+            <div className={hoverHitboxClasses}>
+              <button 
+                disabled={!canInstall}
+                className={`
+                  w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
+                  ${canInstall 
+                    ? `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}` 
+                    : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
+                `}
+              >
+                {installText}
+              </button>
+            </div>
             
-            <button 
-              disabled={!canUninstall}
-              className={`
-                w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
-                ${canUninstall 
-                  ? `bg-accent-magenta text-white shadow-brutal ${buttonInteractiveClasses}` 
-                  : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
-              `}
-            >
-              {removeText}
-            </button>
+            <div className={hoverHitboxClasses}>
+              <button 
+                disabled={!canUninstall}
+                className={`
+                  w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
+                  ${canUninstall 
+                    ? `bg-accent-magenta text-white shadow-brutal ${buttonInteractiveClasses}` 
+                    : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
+                `}
+              >
+                {removeText}
+              </button>
+            </div>
           </div>
 
           <div className="pt-4 border-t-2 border-ink border-dashed">
-            <button
-              className={`w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal flex items-center justify-center gap-3 ${buttonInteractiveClasses}`}
-            >
-              <span>Terminal</span>
-              <img src={terminalIcon} alt="" aria-hidden="true" className="w-5 h-5 object-contain" />
-            </button>
+            <div className={hoverHitboxClasses}>
+              <button
+                className={`w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal flex items-center justify-center gap-3 ${buttonInteractiveClasses}`}
+              >
+                <span>Terminal</span>
+                <img src={terminalIcon} alt="" aria-hidden="true" className="w-5 h-5 object-contain" />
+              </button>
+            </div>
           </div>
         </div>
       </aside>
