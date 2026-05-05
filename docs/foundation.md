@@ -30,5 +30,6 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - **Component Design**: 
   - Tool Cards feature nested stacks: a horizontal top bar (Icon + Name vs. Checkbox + Version Status), a solid brutalist horizontal separator, and a description block at the bottom.
   - Action Panel (right) prioritizes high-contrast visual cues for network status, pending operations, and a monospace system log.
+  - Network status is driven by a browser fetch to `https://www.google.com/generate_204`; when that probe fails, the speed module is replaced with a same-size red warning block instead of stale telemetry.
   - Buttons and tool cards should snap between states with no animated easing or transition effects.
   - Any translated hover surface should move inside a stable outer hit area to avoid hover oscillation at the edges.

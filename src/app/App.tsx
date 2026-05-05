@@ -22,6 +22,7 @@ function App() {
   const [activeFilter, setActiveFilter] = useState<ToolFilter>('all')
   const [tools, setTools] = useState(createInitialTools)
 
+  const [networkState, setNetworkState] = useState<'checking' | 'online' | 'offline'>('checking')
   const [currentSpeed, setCurrentSpeed] = useState(0)
   const polylineRef = useRef<SVGPolylineElement>(null)
 
@@ -69,6 +70,46 @@ function App() {
   }, [isProcessing, pendingTasks, processType])
 
   useEffect(() => {
+    let cancelled = false
+
+    const checkNetwork = async () => {
+      setNetworkState((current) => (current === 'offline' ? current : 'checking'))
+
+      const controller = new AbortController()
+      const timeoutId = window.setTimeout(() => controller.abort(), 4500)
+
+      try {
+        await fetch('https://www.google.com/generate_204', {
+          cache: 'no-store',
+          mode: 'no-cors',
+          signal: controller.signal,
+        })
+
+        if (!cancelled) setNetworkState('online')
+      } catch {
+        if (!cancelled) setNetworkState('offline')
+      } finally {
+        window.clearTimeout(timeoutId)
+      }
+    }
+
+    checkNetwork()
+    const intervalId = window.setInterval(checkNetwork, 15000)
+
+    return () => {
+      cancelled = true
+      window.clearInterval(intervalId)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (networkState === 'online') return
+
+    setCurrentSpeed(0)
+    if (polylineRef.current) polylineRef.current.setAttribute('points', '')
+  }, [networkState])
+
+  useEffect(() => {
     let lastTime = performance.now()
     let offset = 0
     let history = Array(22).fill(0)
@@ -76,6 +117,11 @@ function App() {
     let animationFrameId: number
 
     const tick = (time: number) => {
+      if (networkState !== 'online') {
+        if (polylineRef.current) polylineRef.current.setAttribute('points', '')
+        return
+      }
+
       const delta = time - lastTime
       lastTime = time
 
@@ -97,8 +143,10 @@ function App() {
     }
 
     animationFrameId = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(animationFrameId)
-  }, [])
+    return () => {
+      cancelAnimationFrame(animationFrameId)
+    }
+  }, [networkState])
 
   const handleToolToggle = (id: ToolId) => {
     if (isProcessing) return
@@ -129,6 +177,16 @@ function App() {
   
   const installText = canInstall ? `Install (${selectedMissingCount})` : 'Install'
   const removeText = canUninstall ? `Remove (${selectedInstalledCount})` : 'Remove'
+  const networkPanelClasses = networkState === 'online'
+    ? 'bg-accent-lime text-ink'
+    : networkState === 'offline'
+      ? 'bg-accent-red text-white'
+      : 'bg-white text-ink'
+  const networkLabel = networkState === 'online'
+    ? 'System Active'
+    : networkState === 'offline'
+      ? 'Network Unreachable'
+      : 'Checking Link'
 
   return (
     <main className="h-screen bg-canvas text-ink font-sans flex border-ink overflow-hidden select-none">
@@ -294,32 +352,47 @@ function App() {
       <aside className="w-[20%] p-8 flex flex-col gap-8 bg-white border-l-4 border-ink min-w-[300px]">
         <div>
           <h2 className="text-xs font-mono font-black uppercase tracking-widest mb-4 border-b-4 border-ink pb-2 italic">Network_Link</h2>
-          <div className="flex items-center gap-3 p-3 border-4 border-ink bg-accent-lime shadow-brutal">
-            <div className="w-4 h-4 bg-ink"></div>
-            <span className="text-sm font-black uppercase tracking-tight">System Online</span>
+          <div className={`flex items-center gap-3 p-3 border-4 border-ink shadow-brutal ${networkPanelClasses}`}>
+            <div className={`w-4 h-4 border-2 border-ink ${networkState === 'checking' ? 'animate-pulse bg-white' : networkState === 'offline' ? 'bg-white' : 'bg-ink'}`}></div>
+            <span className="text-sm font-black uppercase tracking-tight">{networkLabel}</span>
           </div>
 
           <div className="mt-4">
-            <div className="flex flex-col gap-2 p-3 border-4 border-ink bg-white shadow-brutal">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-black uppercase tracking-widest">Speed</span>
-                <span className="font-mono font-black">{currentSpeed} KB/s</span>
+            {networkState === 'offline' ? (
+              <div className="flex min-h-[128px] flex-col justify-between border-4 border-ink bg-accent-red p-3 text-white shadow-brutal">
+                <div className="flex items-center justify-between gap-3 border-b-2 border-dashed border-white pb-2">
+                  <span className="text-xs font-black uppercase tracking-widest">Warning</span>
+                  <span className="font-mono text-[11px] font-black uppercase">generate_204 failed</span>
+                </div>
+                <p className="text-lg font-black uppercase leading-tight tracking-tight">
+                  External network check did not resolve.
+                </p>
+                <p className="font-mono text-[11px] font-black uppercase tracking-wide">
+                  Restore connectivity to resume live telemetry.
+                </p>
               </div>
-              <div className="h-16 border-t-2 border-dashed border-ink pt-2 overflow-hidden">
-                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full overflow-visible">
-                  <polyline
-                    ref={polylineRef}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinejoin="miter"
-                    strokeLinecap="square"
-                    vectorEffect="non-scaling-stroke"
-                    className="text-ink"
-                  />
-                </svg>
+            ) : (
+              <div className="flex min-h-[128px] flex-col gap-2 border-4 border-ink bg-white p-3 shadow-brutal">
+                <div className="mb-2 flex justify-between items-center">
+                  <span className="text-xs font-black uppercase tracking-widest">Speed</span>
+                  <span className="font-mono font-black">{networkState === 'online' ? `${currentSpeed} KB/s` : '...'}</span>
+                </div>
+                <div className="h-16 border-t-2 border-dashed border-ink pt-2 overflow-hidden">
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full overflow-visible">
+                    <polyline
+                      ref={polylineRef}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinejoin="miter"
+                      strokeLinecap="square"
+                      vectorEffect="non-scaling-stroke"
+                      className="text-ink"
+                    />
+                  </svg>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
