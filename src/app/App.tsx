@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import claudeCodeIcon from '../assets/tools/claude-code.svg'
 import codexIcon from '../assets/tools/codex.svg'
@@ -36,6 +36,41 @@ function App() {
     { id: 'claude', name: 'Claude Code', iconSrc: claudeCodeIcon, version: null, description: 'Anthropic CLI for agentic coding', selected: false },
     { id: 'codex', name: 'Codex', iconSrc: codexIcon, version: null, description: 'OpenAI CLI for agentic coding', selected: false },
   ])
+
+  const [currentSpeed, setCurrentSpeed] = useState(0)
+  const polylineRef = useRef<SVGPolylineElement>(null)
+
+  useEffect(() => {
+    let lastTime = performance.now()
+    let offset = 0
+    let history = Array(22).fill(0)
+    let nextValue = Math.floor(Math.random() * 2000)
+    let animationFrameId: number
+
+    const tick = (time: number) => {
+      const delta = time - lastTime
+      lastTime = time
+
+      offset += (delta / 1000) * 5
+
+      if (offset >= 5) {
+        offset %= 5
+        history = [...history.slice(1), nextValue]
+        setCurrentSpeed(nextValue)
+        nextValue = Math.floor(Math.random() * 2000)
+      }
+
+      if (polylineRef.current) {
+        const points = history.map((val, i) => `${(i * 5) - offset},${100 - (val / 2000) * 100}`).join(' ')
+        polylineRef.current.setAttribute('points', points)
+      }
+
+      animationFrameId = requestAnimationFrame(tick)
+    }
+
+    animationFrameId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(animationFrameId)
+  }, [])
 
   const toggleSelect = (id: string) => {
     setTools(currentTools => currentTools.map((tool) => (
@@ -185,12 +220,33 @@ function App() {
             <div className="w-4 h-4 bg-ink animate-[pulse_1s_infinite]"></div>
             <span className="text-sm font-black uppercase tracking-tight">System Online</span>
           </div>
+
+          <div className="mt-4">
+            <div className="flex flex-col gap-2 p-3 border-4 border-ink bg-white shadow-brutal">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs font-black uppercase tracking-widest">Speed</span>
+                <span className="font-mono font-black">{currentSpeed} KB/s</span>
+              </div>
+              <div className="h-16 border-t-2 border-dashed border-ink pt-2 overflow-hidden">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full overflow-visible">
+                  <polyline
+                    ref={polylineRef}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinejoin="miter"
+                    strokeLinecap="square"
+                    vectorEffect="non-scaling-stroke"
+                    className="text-ink"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="mt-auto flex flex-col gap-8">
           <div className="flex flex-col gap-4">
-            <h2 className="text-xs font-mono font-black uppercase tracking-widest mb-2 italic">Operations</h2>
-            
             <button 
               disabled={!canInstall}
               className={`
