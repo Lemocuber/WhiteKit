@@ -24,6 +24,10 @@ npm run tauri:dev
 npm run tauri:build
 ```
 
+## CI Builds
+
+Pushing to `dev` runs `.github/workflows/build.yml`, which builds macOS and Windows Tauri artifacts and keeps them on the workflow run for 14 days.
+
 ## Current shape
 
 - `src/`: frontend app

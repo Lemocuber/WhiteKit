@@ -1,0 +1,91 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS
+            os: macos-latest
+            artifact: whitekit-macos
+          - name: Windows
+            os: windows-latest
+            artifact: whitekit-windows
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm run test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build Tauri app
+        run: npm run tauri:build
+
+      - name: Package macOS artifact
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p artifacts
+          cp src-tauri/target/release/whitekit artifacts/whitekit
+          if [ -d src-tauri/target/release/bundle ]; then
+            cp -R src-tauri/target/release/bundle artifacts/bundle
+          fi
+          tar -czf "${{ matrix.artifact }}.tar.gz" -C artifacts .
+
+      - name: Package Windows artifact
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+          Copy-Item src-tauri/target/release/whitekit.exe artifacts/whitekit.exe
+          if (Test-Path src-tauri/target/release/bundle) {
+            Copy-Item src-tauri/target/release/bundle artifacts/bundle -Recurse
+          }
+          Compress-Archive -Path artifacts/* -DestinationPath "${{ matrix.artifact }}.zip"
+
+      - name: Upload macOS artifact
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.tar.gz
+          archive: false
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload Windows artifact
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.zip
+          archive: false
+          if-no-files-found: error
+          retention-days: 14
