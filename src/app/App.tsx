@@ -73,7 +73,7 @@ function App() {
       
       {/* Main Section (80%) */}
       <section className="w-[80%] min-h-0 p-8 flex flex-col overflow-hidden border-r-4 border-ink relative">
-        <header className="flex items-center gap-4">
+        <header className="flex items-center gap-4 pl-2">
           <div className="w-16 h-16 bg-accent-lime border-4 border-ink shadow-brutal flex items-center justify-center p-2 transition-transform hover:scale-105">
             <img src={brandIconSrc} alt="WhiteKit" className="w-full h-full object-contain" />
           </div>
@@ -86,7 +86,7 @@ function App() {
         </header>
 
         {/* Filters/Tabs */}
-        <div className="mt-8 flex gap-4 border-b-4 border-ink pb-4">
+        <div className="mt-8 flex gap-4 border-b-4 border-ink pb-4 pl-2">
           {filterTabs.map((tab) => {
             const isActive = tab.id === activeFilter
 
@@ -111,7 +111,7 @@ function App() {
 
         {/* Card Grid with Flexbox magic */}
         <div className="min-h-0 flex-1">
-          <div className="h-full overflow-y-auto pr-2">
+          <div className="h-full overflow-y-auto pl-2 pr-2">
             <div className="flex flex-wrap content-start gap-6 pt-6 pb-8">
             {filteredTools.map((tool) => {
               const isInstalled = tool.version !== null
@@ -187,41 +187,43 @@ function App() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
-          <h2 className="text-xs font-mono font-black uppercase tracking-widest mb-2 italic">Operations</h2>
-          
-          <button 
-            disabled={!canInstall}
-            className={`
-              w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
-              ${canInstall 
-                ? `bg-accent-lime shadow-brutal ${surfaceInteractiveClasses}` 
-                : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
-            `}
-          >
-            {installText}
-          </button>
-          
-          <button 
-            disabled={!canUninstall}
-            className={`
-              w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
-              ${canUninstall 
-                ? `bg-accent-magenta text-white shadow-brutal ${surfaceInteractiveClasses}` 
-                : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
-            `}
-          >
-            {removeText}
-          </button>
-        </div>
+        <div className="mt-auto flex flex-col gap-8">
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xs font-mono font-black uppercase tracking-widest mb-2 italic">Operations</h2>
+            
+            <button 
+              disabled={!canInstall}
+              className={`
+                w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
+                ${canInstall 
+                  ? `bg-accent-lime shadow-brutal ${surfaceInteractiveClasses}` 
+                  : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
+              `}
+            >
+              {installText}
+            </button>
+            
+            <button 
+              disabled={!canUninstall}
+              className={`
+                w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
+                ${canUninstall 
+                  ? `bg-accent-magenta text-white shadow-brutal ${surfaceInteractiveClasses}` 
+                  : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
+              `}
+            >
+              {removeText}
+            </button>
+          </div>
 
-        <div className="mt-auto pt-4 border-t-2 border-ink border-dashed">
-          <button
-            className={`w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal flex items-center justify-center gap-3 ${surfaceInteractiveClasses}`}
-          >
-            <span>Terminal</span>
-            <img src={terminalIcon} alt="" aria-hidden="true" className="w-5 h-5 object-contain" />
-          </button>
+          <div className="pt-4 border-t-2 border-ink border-dashed">
+            <button
+              className={`w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal flex items-center justify-center gap-3 ${surfaceInteractiveClasses}`}
+            >
+              <span>Terminal</span>
+              <img src={terminalIcon} alt="" aria-hidden="true" className="w-5 h-5 object-contain" />
+            </button>
+          </div>
         </div>
       </aside>
     </main>
