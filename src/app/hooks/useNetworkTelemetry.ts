@@ -6,6 +6,7 @@ export type NetworkState = 'checking' | 'online' | 'offline'
 
 const HISTORY_LENGTH = 22
 const GRAPH_MAX_BYTES_PER_SECOND = 10_000_000
+const GRAPH_CURVE_EXPONENT = 0.35
 const GRAPH_STEP = 5
 const NETWORK_SAMPLE_EVENT = 'network-traffic-sample'
 
@@ -15,6 +16,10 @@ interface NetworkTrafficSample {
 
 function clampGraphSpeed(bytesPerSecond: number) {
   return Math.min(bytesPerSecond, GRAPH_MAX_BYTES_PER_SECOND)
+}
+
+function mapGraphSpeedToHeight(bytesPerSecond: number) {
+  return (clampGraphSpeed(bytesPerSecond) / GRAPH_MAX_BYTES_PER_SECOND) ** GRAPH_CURVE_EXPONENT
 }
 
 export function formatNetworkSpeed(bytesPerSecond: number) {
@@ -130,9 +135,9 @@ export function useNetworkTelemetry() {
         'points',
         history
           .map((value, index) => {
-            const clampedValue = clampGraphSpeed(value)
+            const mappedHeight = mapGraphSpeedToHeight(value)
 
-            return `${(index * GRAPH_STEP) - offset},${100 - (clampedValue / GRAPH_MAX_BYTES_PER_SECOND) * 100}`
+            return `${(index * GRAPH_STEP) - offset},${100 - mappedHeight * 100}`
           })
           .join(' '),
       )
