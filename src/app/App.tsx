@@ -24,7 +24,8 @@ const filterTabs: Array<{ id: ToolFilter; label: string }> = [
   { id: 'installed', label: 'Installed' },
   { id: 'available', label: 'Available' },
 ]
-const surfaceInteractiveClasses = 'transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000]'
+const buttonInteractiveClasses = 'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000]'
+const cardInteractiveClasses = 'transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_0_#000]'
 const surfacePressedClasses = 'translate-x-0.5 translate-y-0.5 shadow-[2px_2px_0_0_#000]'
 
 function App() {
@@ -135,7 +136,7 @@ function App() {
                   px-4 py-2 font-black uppercase text-sm border-2 border-ink
                   ${isActive
                     ? `bg-ink text-canvas ${surfacePressedClasses}`
-                    : `bg-white text-ink shadow-brutal cursor-pointer ${surfaceInteractiveClasses}`}
+                    : `bg-white text-ink shadow-brutal cursor-pointer ${buttonInteractiveClasses}`}
                 `}
               >
                 {tab.label}
@@ -158,7 +159,7 @@ function App() {
                     group cursor-pointer border-4 border-ink p-5 flex flex-col w-[280px] min-h-[190px] relative overflow-hidden
                     ${tool.selected
                       ? `bg-accent-lime ${surfacePressedClasses}`
-                      : `bg-white shadow-brutal ${surfaceInteractiveClasses}`}
+                      : `bg-white shadow-brutal ${cardInteractiveClasses}`}
                   `}
                 >
                   {/* Status Badge overlay */}
@@ -253,7 +254,7 @@ function App() {
               className={`
                 w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
                 ${canInstall 
-                  ? `bg-accent-lime shadow-brutal ${surfaceInteractiveClasses}` 
+                  ? `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}` 
                   : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
               `}
             >
@@ -265,7 +266,7 @@ function App() {
               className={`
                 w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
                 ${canUninstall 
-                  ? `bg-accent-magenta text-white shadow-brutal ${surfaceInteractiveClasses}` 
+                  ? `bg-accent-magenta text-white shadow-brutal ${buttonInteractiveClasses}` 
                   : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
               `}
             >
@@ -275,7 +276,7 @@ function App() {
 
           <div className="pt-4 border-t-2 border-ink border-dashed">
             <button
-              className={`w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal flex items-center justify-center gap-3 ${surfaceInteractiveClasses}`}
+              className={`w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg bg-white shadow-brutal flex items-center justify-center gap-3 ${buttonInteractiveClasses}`}
             >
               <span>Terminal</span>
               <img src={terminalIcon} alt="" aria-hidden="true" className="w-5 h-5 object-contain" />
