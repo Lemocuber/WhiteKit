@@ -68,7 +68,7 @@ export function ToolGrid({
                   <button
                     type="button"
                     onClick={() => onToolToggle(tool.id)}
-                    className={`relative flex min-h-[190px] w-[280px] cursor-pointer flex-col overflow-hidden border-4 border-ink p-5 text-left ${
+                    className={`relative flex min-h-[190px] w-[280px] cursor-pointer flex-col overflow-hidden border-4 border-ink p-5 pb-16 text-left ${
                       tool.selected
                         ? `bg-accent-lime ${surfacePressedClasses}`
                         : `bg-white shadow-brutal ${cardInteractiveClasses}`
@@ -97,8 +97,7 @@ export function ToolGrid({
                       {tool.description}
                     </p>
 
-                    <div className="relative z-10 mt-auto flex items-center justify-between pt-3 text-ink">
-                      <span className="text-[10px] font-black uppercase tracking-widest opacity-0">Spacer</span>
+                    <div className="absolute right-5 bottom-5 z-10 text-ink">
                       <div className="flex h-6 w-6 items-center justify-center border-4 border-ink bg-white">
                         {tool.selected && (
                           <svg viewBox="0 0 16 16" aria-hidden="true" className="h-3.5 w-3.5">
