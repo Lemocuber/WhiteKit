@@ -253,20 +253,6 @@ function App() {
           <div className="flex flex-col gap-4">
             <div className={hoverHitboxClasses}>
               <button 
-                disabled={!canInstall}
-                className={`
-                  w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
-                  ${canInstall 
-                    ? `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}` 
-                    : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
-                `}
-              >
-                {installText}
-              </button>
-            </div>
-            
-            <div className={hoverHitboxClasses}>
-              <button 
                 disabled={!canUninstall}
                 className={`
                   w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
@@ -276,6 +262,20 @@ function App() {
                 `}
               >
                 {removeText}
+              </button>
+            </div>
+            
+            <div className={hoverHitboxClasses}>
+              <button 
+                disabled={!canInstall}
+                className={`
+                  w-full py-4 border-4 border-ink font-black uppercase tracking-widest text-lg
+                  ${canInstall 
+                    ? `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}` 
+                    : 'bg-gray-200 text-gray-400 border-gray-400 cursor-not-allowed'}
+                `}
+              >
+                {installText}
               </button>
             </div>
           </div>
