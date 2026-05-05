@@ -12,7 +12,8 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Backend boundary is deferred to a future `src-tauri/` directory
 - Avoid Rust/Tauri installation on this machine during the frontend phase
 - Tool logos live in `src/assets/tools`; the WhiteKit mark lives in `public/brand/whitekit.svg` and doubles as the favicon
-- Tool catalog and selection/filter model live in `src/lib/tools.ts`; `App.tsx` stays focused on rendering
+- Tool catalog and selection/filter model live in `src/lib/tools.ts`
+- App shell lives in `src/app/App.tsx`; process simulation and telemetry live in `src/app/hooks`, and the main screen sections live in `src/app/components`
 
 ## Aesthetic & UI Decisions
 
