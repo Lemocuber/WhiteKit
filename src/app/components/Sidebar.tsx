@@ -2,6 +2,7 @@ import terminalIcon from '@/assets/tools/terminal.svg'
 import { useNetworkTelemetry } from '@/app/hooks/useNetworkTelemetry'
 import type { ProcessType } from '@/app/hooks/useToolProcessManager'
 import { buttonInteractiveClasses, hoverHitboxClasses } from '@/app/ui'
+import { launchTerminal } from '@/lib/shell'
 
 interface SidebarProps {
   canInstall: boolean
@@ -37,6 +38,12 @@ export function Sidebar({
     : networkState === 'offline'
       ? 'Network Error'
       : 'Connecting'
+
+  const handleTerminalClick = () => {
+    void launchTerminal().catch((error) => {
+      console.error('Failed to launch terminal', error)
+    })
+  }
 
   return (
     <aside className="w-[20%] min-w-[300px] border-l-4 border-ink bg-white p-8 flex flex-col gap-8">
@@ -134,6 +141,7 @@ export function Sidebar({
           <div className={hoverHitboxClasses}>
             <button
               type="button"
+              onClick={handleTerminalClick}
               className={`flex w-full items-center justify-center gap-3 border-4 border-ink bg-white py-4 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
             >
               <span>Terminal</span>
