@@ -1,18 +1,38 @@
+import { isTauri } from '@tauri-apps/api/core'
+import { listen, type UnlistenFn } from '@tauri-apps/api/event'
 import { useEffect, useRef, useState } from 'react'
 
 export type NetworkState = 'checking' | 'online' | 'offline'
 
 const HISTORY_LENGTH = 22
-const MAX_SPEED = 2000
+const GRAPH_MAX_BYTES_PER_SECOND = 10_000_000
+const GRAPH_STEP = 5
+const NETWORK_SAMPLE_EVENT = 'network-traffic-sample'
 
-function getRandomSpeed() {
-  return Math.floor(Math.random() * MAX_SPEED)
+interface NetworkTrafficSample {
+  bytesLastSecond: number
+}
+
+function clampGraphSpeed(bytesPerSecond: number) {
+  return Math.min(bytesPerSecond, GRAPH_MAX_BYTES_PER_SECOND)
+}
+
+export function formatNetworkSpeed(bytesPerSecond: number) {
+  if (bytesPerSecond >= 1_000_000) {
+    const megabytesPerSecond = bytesPerSecond / 1_000_000
+    const precision = megabytesPerSecond >= 10 ? 0 : 1
+
+    return `${megabytesPerSecond.toFixed(precision)} MB/s`
+  }
+
+  return `${Math.round(bytesPerSecond / 1_000)} KB/s`
 }
 
 export function useNetworkTelemetry() {
   const [networkState, setNetworkState] = useState<NetworkState>('checking')
   const [currentSpeed, setCurrentSpeed] = useState(0)
   const polylineRef = useRef<SVGPolylineElement>(null)
+  const latestSampleRef = useRef(0)
 
   useEffect(() => {
     let cancelled = false
@@ -46,6 +66,40 @@ export function useNetworkTelemetry() {
   }, [])
 
   useEffect(() => {
+    if (!isTauri()) {
+      latestSampleRef.current = 0
+      return
+    }
+
+    let active = true
+    let unlisten: UnlistenFn | undefined
+
+    void listen<NetworkTrafficSample>(NETWORK_SAMPLE_EVENT, ({ payload }) => {
+      const bytesLastSecond = Math.max(0, payload.bytesLastSecond)
+
+      latestSampleRef.current = bytesLastSecond
+      setCurrentSpeed(bytesLastSecond)
+    })
+      .then((cleanup) => {
+        if (!active) {
+          cleanup()
+          return
+        }
+
+        unlisten = cleanup
+      })
+      .catch(() => {
+        latestSampleRef.current = 0
+        setCurrentSpeed(0)
+      })
+
+    return () => {
+      active = false
+      unlisten?.()
+    }
+  }, [])
+
+  useEffect(() => {
     if (networkState === 'online') return
 
     polylineRef.current?.setAttribute('points', '')
@@ -55,7 +109,6 @@ export function useNetworkTelemetry() {
     let lastTime = performance.now()
     let offset = 0
     let history = Array(HISTORY_LENGTH).fill(0)
-    let nextValue = getRandomSpeed()
     let animationFrameId = 0
 
     const tick = (time: number) => {
@@ -66,19 +119,21 @@ export function useNetworkTelemetry() {
 
       const delta = time - lastTime
       lastTime = time
-      offset += (delta / 1000) * 5
+      offset += (delta / 1000) * GRAPH_STEP
 
-      if (offset >= 5) {
-        offset %= 5
-        history = [...history.slice(1), nextValue]
-        setCurrentSpeed(nextValue)
-        nextValue = getRandomSpeed()
+      if (offset >= GRAPH_STEP) {
+        offset %= GRAPH_STEP
+        history = [...history.slice(1), latestSampleRef.current]
       }
 
       polylineRef.current?.setAttribute(
         'points',
         history
-          .map((value, index) => `${(index * 5) - offset},${100 - (value / MAX_SPEED) * 100}`)
+          .map((value, index) => {
+            const clampedValue = clampGraphSpeed(value)
+
+            return `${(index * GRAPH_STEP) - offset},${100 - (clampedValue / GRAPH_MAX_BYTES_PER_SECOND) * 100}`
+          })
           .join(' '),
       )
 
@@ -92,5 +147,5 @@ export function useNetworkTelemetry() {
     }
   }, [networkState])
 
-  return { networkState, currentSpeed, polylineRef }
+  return { currentSpeed, currentSpeedLabel: formatNetworkSpeed(currentSpeed), networkState, polylineRef }
 }

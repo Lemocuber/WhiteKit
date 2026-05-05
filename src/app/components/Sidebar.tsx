@@ -24,7 +24,7 @@ export function Sidebar({
   removeText,
   startProcess,
 }: SidebarProps) {
-  const { networkState, currentSpeed, polylineRef } = useNetworkTelemetry()
+  const { networkState, currentSpeedLabel, polylineRef } = useNetworkTelemetry()
   const networkPanelClasses = networkState === 'online'
     ? 'bg-accent-lime text-ink'
     : networkState === 'offline'
@@ -69,7 +69,7 @@ export function Sidebar({
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs font-black uppercase tracking-widest">Speed</span>
                 <span className="font-mono font-black">
-                  {networkState === 'online' ? `${currentSpeed} KB/s` : '...'}
+                  {networkState === 'online' ? currentSpeedLabel : '...'}
                 </span>
               </div>
               <div className="h-16 overflow-hidden border-t-2 border-dashed border-ink pt-2">

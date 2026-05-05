@@ -2,9 +2,16 @@ use std::{
   env,
   process::Command,
   string::String,
+  thread,
+  time::Duration,
 };
 
 use serde::Serialize;
+use sysinfo::Networks;
+use tauri::Emitter;
+
+const NETWORK_SAMPLE_EVENT: &str = "network-traffic-sample";
+const NETWORK_SAMPLE_INTERVAL: Duration = Duration::from_secs(1);
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -12,6 +19,12 @@ struct ShellResult {
   stdout: String,
   stderr: String,
   exit_code: i32,
+}
+
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct NetworkTrafficSample {
+  bytes_last_second: u64,
 }
 
 fn shell_program_and_args(command: &str, shell_env: Option<&str>) -> (String, Vec<String>) {
@@ -64,8 +77,38 @@ async fn run_shell(command: String) -> ShellResult {
     })
 }
 
+fn start_network_sampler(app_handle: tauri::AppHandle) {
+  thread::spawn(move || {
+    let mut networks = Networks::new_with_refreshed_list();
+
+    loop {
+      thread::sleep(NETWORK_SAMPLE_INTERVAL);
+      networks.refresh(true);
+
+      let bytes_last_second = networks
+        .iter()
+        .map(|(_, data)| data.received().saturating_add(data.transmitted()))
+        .sum::<u64>();
+
+      if app_handle
+        .emit(
+          NETWORK_SAMPLE_EVENT,
+          NetworkTrafficSample { bytes_last_second },
+        )
+        .is_err()
+      {
+        break;
+      }
+    }
+  });
+}
+
 fn main() {
   tauri::Builder::default()
+    .setup(|app| {
+      start_network_sampler(app.handle().clone());
+      Ok(())
+    })
     .invoke_handler(tauri::generate_handler![run_shell])
     .run(tauri::generate_context!())
     .expect("error while running WhiteKit");

@@ -10,4 +10,5 @@ tauri-build = { version = "2.5.1", features = [] }
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
+sysinfo = "0.38.4"
 tauri = { version = "2.11.0", features = [] }
