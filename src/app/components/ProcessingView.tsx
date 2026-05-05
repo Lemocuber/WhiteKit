@@ -24,11 +24,11 @@ export function ProcessingView({
 
       <div className="relative flex-1 overflow-y-auto border-4 border-ink bg-white p-6 shadow-brutal">
         <div className="absolute top-0 right-0 z-10">
-          <div className="border-b-4 border-l-4 border-ink bg-accent-lime px-2 py-1 text-[10px] font-mono font-black uppercase tracking-widest text-ink">
+          <div className="flex min-h-[32px] items-center border-b-4 border-l-4 border-ink bg-accent-lime px-2.5 py-1 text-xs font-mono font-black uppercase tracking-widest text-ink">
             PROGRESS_TRACKER
           </div>
         </div>
-        <div className="flex flex-col gap-4 pt-4">
+        <div className="flex flex-col gap-4 pt-8">
           {taskQueue.map((toolId) => {
             const tool = tools.find((item) => item.id === toolId)
 

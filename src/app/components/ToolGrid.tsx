@@ -76,7 +76,7 @@ export function ToolGrid({
                   >
                     <div className="absolute top-0 right-0 z-10">
                       <div
-                        className={`flex items-center gap-1.5 border-b-4 border-l-4 border-ink px-2 py-1 text-[10px] font-mono font-black tracking-widest transition-colors ${
+                        className={`flex min-h-[32px] items-center gap-1.5 border-b-4 border-l-4 border-ink px-2.5 py-1 text-xs font-mono font-black tracking-widest transition-colors ${
                           isInstalled
                             ? 'bg-accent-lime text-ink normal-case'
                             : 'bg-accent-magenta text-white uppercase'
