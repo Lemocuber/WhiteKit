@@ -61,7 +61,7 @@ export function ToolGrid({
         <div className="h-full overflow-y-auto px-2">
           <div className="flex flex-wrap content-start gap-6 pt-6 pb-8">
             {tools.map((tool) => {
-              const isInstalled = isToolInstalled(tool)
+              const badge = getStatusBadge(tool)
 
               return (
                 <div key={tool.id} className={hoverHitboxClasses}>
@@ -77,12 +77,10 @@ export function ToolGrid({
                     <div className="absolute top-0 right-0 z-10">
                       <div
                         className={`flex min-h-[32px] items-center gap-1.5 border-b-4 border-l-4 border-ink px-2.5 py-1 text-xs font-mono font-black tracking-widest transition-colors ${
-                          isInstalled
-                            ? 'bg-accent-lime text-ink normal-case'
-                            : 'bg-accent-magenta text-white uppercase'
+                          badge.classes
                         }`}
                       >
-                        {isInstalled ? `v${tool.version}` : 'not installed'}
+                        {badge.label}
                       </div>
                     </div>
 
@@ -125,4 +123,24 @@ export function ToolGrid({
       </div>
     </>
   )
+}
+
+function getStatusBadge(tool: Tool) {
+  if (tool.status === 'checking') {
+    return { label: 'checking', classes: 'bg-white text-ink uppercase' }
+  }
+
+  if (tool.status === 'processing') {
+    return { label: 'processing', classes: 'bg-ink text-canvas uppercase' }
+  }
+
+  if (tool.status === 'failed') {
+    return { label: 'failed', classes: 'bg-accent-red text-white uppercase' }
+  }
+
+  if (isToolInstalled(tool)) {
+    return { label: `v${tool.version}`, classes: 'bg-accent-lime text-ink normal-case' }
+  }
+
+  return { label: 'not installed', classes: 'bg-accent-magenta text-white uppercase' }
 }

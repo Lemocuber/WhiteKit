@@ -4,6 +4,7 @@ import type { Tool, ToolId } from '@/lib/tools'
 interface ProcessingViewProps {
   completedTasks: ToolId[]
   currentTaskId: ToolId | null
+  failedTasks: ToolId[]
   processType: ProcessType
   taskQueue: ToolId[]
   tools: Tool[]
@@ -12,6 +13,7 @@ interface ProcessingViewProps {
 export function ProcessingView({
   completedTasks,
   currentTaskId,
+  failedTasks,
   processType,
   taskQueue,
   tools,
@@ -35,6 +37,7 @@ export function ProcessingView({
             if (!tool) return null
 
             const isDone = completedTasks.includes(toolId)
+            const didFail = failedTasks.includes(toolId)
             const isCurrent = currentTaskId === toolId
 
             return (
@@ -46,11 +49,16 @@ export function ProcessingView({
                 <div className="flex-1">
                   <h3 className="text-2xl font-black uppercase tracking-tight">{tool.name}</h3>
                   <p className="mt-1 font-mono text-xs font-bold">
-                    {isDone ? 'COMPLETE' : isCurrent ? 'PROCESSING' : 'WAITING_IN_QUEUE'}
+                    {didFail ? 'FAILED' : isDone ? 'COMPLETE' : isCurrent ? 'PROCESSING' : 'WAITING_IN_QUEUE'}
                   </p>
                 </div>
-                {(isDone || isCurrent) && (
+                {(didFail || isDone || isCurrent) && (
                   <div className="mr-3 flex w-8 justify-center">
+                    {didFail && (
+                      <div className="flex h-8 w-8 items-center justify-center bg-accent-red text-white">
+                        <span className="font-mono text-lg font-black leading-none">!</span>
+                      </div>
+                    )}
                     {isDone && (
                       <div className="flex h-8 w-8 items-center justify-center bg-ink text-canvas">
                         <svg viewBox="0 0 16 16" className="h-5 w-5">

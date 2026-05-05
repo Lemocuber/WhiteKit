@@ -3,16 +3,15 @@ import codexIcon from '@/assets/tools/codex.svg'
 import gitIcon from '@/assets/tools/git.svg'
 import nodejsIcon from '@/assets/tools/nodejs.svg'
 import pythonIcon from '@/assets/tools/python.svg'
+import { createToolCatalog, type ToolCatalogEntry, type ToolId, type ToolStatus } from '@/lib/toolCatalog'
 
-export type ToolId = 'nodejs' | 'python' | 'git' | 'claude' | 'codex'
+export type { ToolId, ToolStatus } from '@/lib/toolCatalog'
 export type ToolFilter = 'all' | 'installed' | 'available'
 
-interface ToolDefinition {
-  id: ToolId
-  name: string
+interface ToolDefinition extends ToolCatalogEntry {
   iconSrc: string
   version: string | null
-  description: string
+  status: ToolStatus
 }
 
 export interface Tool extends ToolDefinition {
@@ -25,50 +24,26 @@ export const toolFilterTabs: Array<{ id: ToolFilter; label: string }> = [
   { id: 'available', label: 'Available' },
 ]
 
-const toolCatalog: ToolDefinition[] = [
-  {
-    id: 'nodejs',
-    name: 'Node.js',
-    iconSrc: nodejsIcon,
-    version: '20.11.0',
-    description: 'JavaScript runtime for backend dev',
-  },
-  {
-    id: 'python',
-    name: 'Python',
-    iconSrc: pythonIcon,
-    version: '3.12.2',
-    description: 'High-level programming language',
-  },
-  {
-    id: 'git',
-    name: 'Git',
-    iconSrc: gitIcon,
-    version: '2.44.0',
-    description: 'Distributed version control system',
-  },
-  {
-    id: 'claude',
-    name: 'Claude Code',
-    iconSrc: claudeCodeIcon,
-    version: null,
-    description: 'Anthropic CLI for agentic coding',
-  },
-  {
-    id: 'codex',
-    name: 'Codex',
-    iconSrc: codexIcon,
-    version: null,
-    description: 'OpenAI CLI for agentic coding',
-  },
-]
+const toolIcons: Record<ToolId, string> = {
+  nodejs: nodejsIcon,
+  python: pythonIcon,
+  git: gitIcon,
+  claude: claudeCodeIcon,
+  codex: codexIcon,
+}
 
 export function createInitialTools(): Tool[] {
-  return toolCatalog.map((tool) => ({ ...tool, selected: false }))
+  return createToolCatalog().map((tool) => ({
+    ...tool,
+    iconSrc: toolIcons[tool.id],
+    selected: false,
+    status: 'checking',
+    version: null,
+  }))
 }
 
 export function isToolInstalled(tool: Tool): boolean {
-  return tool.version !== null
+  return tool.status === 'installed'
 }
 
 export function toggleToolSelection(tools: Tool[], id: ToolId): Tool[] {
@@ -93,8 +68,11 @@ export function getToolSelectionState(tools: Tool[]) {
   const selectedTools = tools.filter((tool) => tool.selected)
   const selectedInstalledCount = selectedTools.filter(isToolInstalled).length
   const selectedMissingCount = selectedTools.length - selectedInstalledCount
-  const canUninstall = selectedTools.length > 0 && selectedInstalledCount === selectedTools.length
-  const canInstall = selectedTools.length > 0 && selectedMissingCount === selectedTools.length
+  const hasPendingSelection = selectedTools.some((tool) => (
+    tool.status === 'checking' || tool.status === 'processing'
+  ))
+  const canUninstall = !hasPendingSelection && selectedTools.length > 0 && selectedInstalledCount === selectedTools.length
+  const canInstall = !hasPendingSelection && selectedTools.length > 0 && selectedMissingCount === selectedTools.length
 
   return {
     canInstall,

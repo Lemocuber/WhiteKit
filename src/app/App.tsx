@@ -15,6 +15,7 @@ function App() {
     taskQueue,
     pendingTasks,
     completedTasks,
+    failedTasks,
     dots,
     canInstall,
     canUninstall,
@@ -32,6 +33,7 @@ function App() {
           <ProcessingView
             completedTasks={completedTasks}
             currentTaskId={pendingTasks[0] ?? null}
+            failedTasks={failedTasks}
             processType={processType}
             taskQueue={taskQueue}
             tools={tools}

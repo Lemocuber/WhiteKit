@@ -1,0 +1,13 @@
+[package]
+name = "whitekit"
+version = "0.0.0"
+description = "WhiteKit desktop shell"
+authors = ["WhiteKit"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2.5.1", features = [] }
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+tauri = { version = "2.11.0", features = [] }
