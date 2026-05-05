@@ -73,8 +73,6 @@ function App() {
     let cancelled = false
 
     const checkNetwork = async () => {
-      setNetworkState((current) => (current === 'offline' ? current : 'checking'))
-
       const controller = new AbortController()
       const timeoutId = window.setTimeout(() => controller.abort(), 4500)
 
@@ -183,10 +181,10 @@ function App() {
       ? 'bg-accent-red text-white'
       : 'bg-white text-ink'
   const networkLabel = networkState === 'online'
-    ? 'System Active'
+    ? 'System Online'
     : networkState === 'offline'
-      ? 'Network Unreachable'
-      : 'Checking Link'
+      ? 'Network Error'
+      : 'Connecting'
 
   return (
     <main className="h-screen bg-canvas text-ink font-sans flex border-ink overflow-hidden select-none">
@@ -361,14 +359,10 @@ function App() {
             {networkState === 'offline' ? (
               <div className="flex min-h-[128px] flex-col justify-between border-4 border-ink bg-accent-red p-3 text-white shadow-brutal">
                 <div className="flex items-center justify-between gap-3 border-b-2 border-dashed border-white pb-2">
-                  <span className="text-xs font-black uppercase tracking-widest">Warning</span>
-                  <span className="font-mono text-[11px] font-black uppercase">generate_204 failed</span>
+                  <span className="text-lg font-black uppercase tracking-widest">Warning</span>
                 </div>
-                <p className="text-lg font-black uppercase leading-tight tracking-tight">
-                  External network check did not resolve.
-                </p>
-                <p className="font-mono text-[11px] font-black uppercase tracking-wide">
-                  Restore connectivity to resume live telemetry.
+                <p className="text-lg font-black uppercase leading-tight tracking-tight mt-2">
+                  Network failure. Check your connection
                 </p>
               </div>
             ) : (
