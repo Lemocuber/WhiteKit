@@ -19,6 +19,11 @@ export interface ToolDetectionResult {
   version: string | null
 }
 
+export interface ToolResolvedState {
+  status: Extract<ToolStatus, 'installed' | 'missing'>
+  version: string | null
+}
+
 export function parseToolVersion(output: string, versionRegex: string): string | null {
   return new RegExp(versionRegex).exec(output)?.[0] ?? null
 }
@@ -88,4 +93,26 @@ export async function runToolAction(
   }
 
   return detectTool(tool, runShell)
+}
+
+export function resolveToolActionState(
+  result: ToolDetectionResult,
+  previous: Pick<ToolLifecycleState, 'status'> & { version?: string | null },
+  processType: ProcessType,
+): ToolResolvedState {
+  const expectedStatus: ToolResolvedState['status'] = processType === 'install' ? 'installed' : 'missing'
+
+  if (result.status === expectedStatus) {
+    return {
+      status: expectedStatus,
+      version: result.version,
+    }
+  }
+
+  const wasInstalled = previous.status === 'installed'
+
+  return {
+    status: wasInstalled ? 'installed' : 'missing',
+    version: wasInstalled ? previous.version ?? null : null,
+  }
 }

@@ -133,10 +133,6 @@ function getStatusBadge(tool: Tool) {
     return { label: 'processing', classes: 'bg-ink text-canvas uppercase' }
   }
 
-  if (tool.status === 'failed') {
-    return { label: 'failed', classes: 'bg-accent-red text-white uppercase' }
-  }
-
   if (isToolInstalled(tool)) {
     return { label: `v${tool.version}`, classes: 'bg-accent-lime text-ink normal-case' }
   }

@@ -6,6 +6,7 @@ import {
   detectTool,
   expandInstallQueue,
   parseToolVersion,
+  resolveToolActionState,
   runToolAction,
   type ShellResult,
 } from './toolLifecycle.ts'
@@ -89,6 +90,26 @@ test('runToolAction refreshes detection after successful installs', async () => 
 
   assert.deepEqual(result, { status: 'installed', version: '0.9.1' })
   assert.deepEqual(calls, [codex.install, codex.detect])
+})
+
+test('resolveToolActionState restores missing state after a failed install', () => {
+  const result = resolveToolActionState(
+    { status: 'failed', version: null },
+    { id: 'codex', status: 'missing', version: null },
+    'install',
+  )
+
+  assert.deepEqual(result, { status: 'missing', version: null })
+})
+
+test('resolveToolActionState restores installed state after a failed remove', () => {
+  const result = resolveToolActionState(
+    { status: 'failed', version: null },
+    { id: 'git', status: 'installed', version: '2.49.0' },
+    'remove',
+  )
+
+  assert.deepEqual(result, { status: 'installed', version: '2.49.0' })
 })
 
 function shellResult(stdout: string, stderr: string, exitCode: number): ShellResult {

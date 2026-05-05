@@ -4,6 +4,7 @@ import { runShell } from '@/lib/shell'
 import {
   detectTool,
   expandInstallQueue,
+  resolveToolActionState,
   runToolAction,
   type ProcessType,
   type ShellRunner,
@@ -53,14 +54,15 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
 
       const result = await runToolAction(tool, type, commandRunner)
       const expectedStatus: ToolStatus = type === 'install' ? 'installed' : 'missing'
-      const didFinish = result.status === expectedStatus
+      const nextState = resolveToolActionState(result, tool, type)
+      const didFinish = nextState.status === expectedStatus
 
       setPendingTasks((current) => current.slice(1))
       setTools((current) => updateToolState(
         current,
         toolId,
-        didFinish ? result.status : 'failed',
-        didFinish ? result.version : null,
+        nextState.status,
+        nextState.version,
         false,
       ))
 
