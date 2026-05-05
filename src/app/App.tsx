@@ -1,29 +1,18 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import claudeCodeIcon from '../assets/tools/claude-code.svg'
-import codexIcon from '../assets/tools/codex.svg'
-import gitIcon from '../assets/tools/git.svg'
-import nodejsIcon from '../assets/tools/nodejs.svg'
-import pythonIcon from '../assets/tools/python.svg'
-import terminalIcon from '../assets/tools/terminal.svg'
-
-interface Tool {
-  id: string
-  name: string
-  iconSrc: string
-  version: string | null
-  description: string
-  selected: boolean
-}
-
-type ToolFilter = 'all' | 'installed' | 'available'
+import terminalIcon from '@/assets/tools/terminal.svg'
+import {
+  createInitialTools,
+  getFilteredTools,
+  getToolSelectionState,
+  isToolInstalled,
+  toggleToolSelection,
+  toolFilterTabs,
+  type ToolFilter,
+  type ToolId,
+} from '@/lib/tools'
 
 const brandIconSrc = '/brand/whitekit.svg'
-const filterTabs: Array<{ id: ToolFilter; label: string }> = [
-  { id: 'all', label: 'All Tools' },
-  { id: 'installed', label: 'Installed' },
-  { id: 'available', label: 'Available' },
-]
 const hoverHitboxClasses = 'group pt-0.5 pl-0.5 -mt-0.5 -ml-0.5'
 const buttonInteractiveClasses = 'group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:shadow-[6px_6px_0_0_#000] group-active:translate-x-0.5 group-active:translate-y-0.5 group-active:shadow-[2px_2px_0_0_#000]'
 const cardInteractiveClasses = 'group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:shadow-[6px_6px_0_0_#000] group-active:translate-x-0.5 group-active:translate-y-0.5 group-active:shadow-[2px_2px_0_0_#000]'
@@ -31,13 +20,7 @@ const surfacePressedClasses = 'translate-x-0.5 translate-y-0.5 shadow-[2px_2px_0
 
 function App() {
   const [activeFilter, setActiveFilter] = useState<ToolFilter>('all')
-  const [tools, setTools] = useState<Tool[]>([
-    { id: 'nodejs', name: 'Node.js', iconSrc: nodejsIcon, version: '20.11.0', description: 'JavaScript runtime for backend dev', selected: false },
-    { id: 'python', name: 'Python', iconSrc: pythonIcon, version: '3.12.2', description: 'High-level programming language', selected: false },
-    { id: 'git', name: 'Git', iconSrc: gitIcon, version: '2.44.0', description: 'Distributed version control system', selected: false },
-    { id: 'claude', name: 'Claude Code', iconSrc: claudeCodeIcon, version: null, description: 'Anthropic CLI for agentic coding', selected: false },
-    { id: 'codex', name: 'Codex', iconSrc: codexIcon, version: null, description: 'OpenAI CLI for agentic coding', selected: false },
-  ])
+  const [tools, setTools] = useState(createInitialTools)
 
   const [currentSpeed, setCurrentSpeed] = useState(0)
   const polylineRef = useRef<SVGPolylineElement>(null)
@@ -74,34 +57,17 @@ function App() {
     return () => cancelAnimationFrame(animationFrameId)
   }, [])
 
-  const toggleSelect = (id: string) => {
-    setTools(currentTools => currentTools.map((tool) => (
-      tool.id === id ? { ...tool, selected: !tool.selected } : tool
-    )))
+  const handleToolToggle = (id: ToolId) => {
+    setTools((currentTools) => toggleToolSelection(currentTools, id))
   }
 
-  const filteredTools = tools.filter((tool) => {
-    if (activeFilter === 'installed') {
-      return tool.version !== null
-    }
-
-    if (activeFilter === 'available') {
-      return tool.version === null
-    }
-
-    return true
-  })
-
-  const selectedTools = tools.filter(t => t.selected)
-  const selectedInstalledCount = selectedTools.filter(t => t.version !== null).length
-  const selectedMissingCount = selectedTools.filter(t => t.version === null).length
-
-  const allSelectedInstalled = selectedTools.length > 0 && selectedTools.every(t => t.version !== null)
-  const allSelectedMissing = selectedTools.length > 0 && selectedTools.every(t => t.version === null)
-  
-  const canUninstall = allSelectedInstalled
-  const canInstall = allSelectedMissing
-
+  const filteredTools = getFilteredTools(tools, activeFilter)
+  const {
+    canInstall,
+    canUninstall,
+    selectedInstalledCount,
+    selectedMissingCount,
+  } = getToolSelectionState(tools)
   const installText = canInstall ? `Install (${selectedMissingCount})` : 'Install'
   const removeText = canUninstall ? `Remove (${selectedInstalledCount})` : 'Remove'
 
@@ -124,7 +90,7 @@ function App() {
 
         {/* Filters/Tabs */}
         <div className="mt-8 flex gap-4 border-b-4 border-ink pb-4 pl-2">
-          {filterTabs.map((tab) => {
+          {toolFilterTabs.map((tab) => {
             const isActive = tab.id === activeFilter
 
             return (
@@ -152,11 +118,11 @@ function App() {
           <div className="h-full overflow-y-auto pl-2 pr-2">
             <div className="flex flex-wrap content-start gap-6 pt-6 pb-8">
             {filteredTools.map((tool) => {
-              const isInstalled = tool.version !== null
+              const isInstalled = isToolInstalled(tool)
               return (
                 <div key={tool.id} className={hoverHitboxClasses}>
                   <div
-                    onClick={() => toggleSelect(tool.id)}
+                    onClick={() => handleToolToggle(tool.id)}
                     className={`
                       cursor-pointer border-4 border-ink p-5 flex flex-col w-[280px] min-h-[190px] relative overflow-hidden
                       ${tool.selected
