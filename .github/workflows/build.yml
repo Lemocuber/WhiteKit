@@ -53,10 +53,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           mkdir -p artifacts
-          cp src-tauri/target/release/whitekit artifacts/whitekit
-          if [ -d src-tauri/target/release/bundle ]; then
-            cp -R src-tauri/target/release/bundle artifacts/bundle
-          fi
+          cp -R src-tauri/target/release/bundle/macos/WhiteKit.app artifacts/WhiteKit.app
           tar -czf "${{ matrix.artifact }}.tar.gz" -C artifacts .
 
       - name: Package Windows artifact

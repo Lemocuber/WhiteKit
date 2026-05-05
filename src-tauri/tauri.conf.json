@@ -13,9 +13,9 @@
     "windows": [
       {
         "title": "WhiteKit",
-        "width": 1280,
-        "height": 800,
-        "minWidth": 1000,
+        "width": 980,
+        "height": 700,
+        "minWidth": 980,
         "minHeight": 700
       }
     ],
@@ -24,7 +24,7 @@
     }
   },
   "bundle": {
-    "active": false,
+    "active": true,
     "targets": "all"
   }
 }
