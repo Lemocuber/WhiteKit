@@ -46,33 +46,31 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Build Tauri app
-        run: npm run tauri:build
+      - name: Build macOS app bundle
+        if: runner.os == 'macOS'
+        run: npx tauri build --bundles app --ci --no-sign
+
+      - name: Build Windows portable executable
+        if: runner.os == 'Windows'
+        run: npx tauri build --no-bundle --ci
 
       - name: Package macOS artifact
         if: runner.os == 'macOS'
         run: |
-          mkdir -p artifacts
-          cp -R src-tauri/target/release/bundle/macos/WhiteKit.app artifacts/WhiteKit.app
-          tar -czf "${{ matrix.artifact }}.tar.gz" -C artifacts .
+          ditto -c -k --keepParent src-tauri/target/release/bundle/macos/WhiteKit.app "${{ matrix.artifact }}.zip"
 
       - name: Package Windows artifact
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force artifacts | Out-Null
-          Copy-Item src-tauri/target/release/whitekit.exe artifacts/whitekit.exe
-          if (Test-Path src-tauri/target/release/bundle) {
-            Copy-Item src-tauri/target/release/bundle artifacts/bundle -Recurse
-          }
-          Compress-Archive -Path artifacts/* -DestinationPath "${{ matrix.artifact }}.zip"
+          Compress-Archive -Path src-tauri/target/release/whitekit.exe -DestinationPath "${{ matrix.artifact }}.zip"
 
       - name: Upload macOS artifact
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact }}
-          path: ${{ matrix.artifact }}.tar.gz
+          path: ${{ matrix.artifact }}.zip
           archive: false
           if-no-files-found: error
           retention-days: 14

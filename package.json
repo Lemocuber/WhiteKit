@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "node --test --experimental-strip-types src/lib/*.test.ts",
+    "tauri:icon": "tauri icon public/brand/whitekit-native-icon.svg --output src-tauri/icons",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"
   },

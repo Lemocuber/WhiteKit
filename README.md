@@ -12,7 +12,7 @@ This repo contains the frontend foundation and a minimal Tauri backend:
 
 WhiteKit launches as a normal desktop app on macOS and Windows. The backend exposes a single shell execution command that returns `stdout`, `stderr`, and `exitCode`; tool lifecycle policy stays in the frontend catalog.
 
-The native app icon set under `src-tauri/icons/` is generated from `public/brand/whitekit.svg` and must stay committed for Tauri/CI builds.
+The native app icon set under `src-tauri/icons/` is generated from `public/brand/whitekit-native-icon.svg`, which wraps the existing `public/brand/whitekit.svg` mark on a white background for desktop icon use, and must stay committed for Tauri/CI builds.
 
 ## Scripts
 
@@ -28,7 +28,16 @@ npm run tauri:build
 
 ## CI Builds
 
-Pushing to `dev` runs `.github/workflows/build.yml`, which builds macOS and Windows Tauri artifacts and keeps them on the workflow run for 14 days. The macOS artifact is packaged as `WhiteKit.app`.
+Pushing to `dev` runs `.github/workflows/build.yml`, which builds macOS and Windows Tauri artifacts and keeps them on the workflow run for 14 days.
+
+- macOS: zipped `WhiteKit.app` for unsigned internal testing
+- Windows: zipped portable `whitekit.exe`
+
+Regenerate native icons after brand icon changes with:
+
+```bash
+npm run tauri:icon
+```
 
 ## Current shape
 
