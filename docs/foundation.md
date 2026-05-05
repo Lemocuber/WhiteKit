@@ -9,6 +9,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Target platforms: macOS and Windows
 - Current stack: Vite, React, TypeScript, Tailwind, Tauri
 - The native backend is intentionally minimal: it launches without root/admin requirements and exposes one shell execution command returning `stdout`, `stderr`, and `exitCode`
+- On macOS, shell commands must run through the user's login+interactive shell so PATH-managed tools like `nvm` Node installs and npm-global CLIs are detectable from the app
 - Tool lifecycle policy lives in the frontend catalog: detect/install/uninstall commands, dependency metadata, and version parsing
 - Installed state is only trusted when detect command output matches the catalog version regex
 - Install queues expand missing dependencies before selected tools; uninstall never removes dependencies automatically
