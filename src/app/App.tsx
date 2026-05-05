@@ -210,6 +210,7 @@ function App() {
             </div>
           </div>
         </div>
+        <div aria-hidden="true" className="pointer-events-none absolute bottom-8 left-8 right-8 border-b-4 border-ink" />
       </section>
 
       {/* Right Section (20%) */}
