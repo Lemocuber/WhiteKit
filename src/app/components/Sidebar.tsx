@@ -42,9 +42,11 @@ export function Sidebar({
         <h2 className="mb-4 border-b-4 border-ink pb-2 text-xs font-mono font-black uppercase tracking-widest italic">
           Network_Link
         </h2>
-        <div className={`flex items-center gap-3 border-4 border-ink p-3 shadow-brutal ${networkPanelClasses}`}>
+        <div
+          className={`flex min-h-[68px] items-center gap-4 border-4 border-ink px-4 py-3 shadow-brutal ${networkPanelClasses}`}
+        >
           <div
-            className={`h-4 w-4 border-2 border-ink ${
+            className={`h-5 w-5 border-2 border-ink ${
               networkState === 'checking'
                 ? 'animate-pulse bg-white'
                 : networkState === 'offline'
@@ -52,16 +54,13 @@ export function Sidebar({
                   : 'bg-ink'
             }`}
           />
-          <span className="text-sm font-black uppercase tracking-tight">{networkLabel}</span>
+          <span className="text-lg font-black uppercase tracking-tight">{networkLabel}</span>
         </div>
 
         <div className="mt-4">
           {networkState === 'offline' ? (
-            <div className="flex min-h-[128px] flex-col justify-between border-4 border-ink bg-accent-red p-3 text-white shadow-brutal">
-              <div className="flex items-center justify-between gap-3 border-b-2 border-dashed border-white pb-2">
-                <span className="text-lg font-black uppercase tracking-widest">Warning</span>
-              </div>
-              <p className="mt-2 text-lg font-black uppercase leading-tight tracking-tight">
+            <div className="flex flex-col justify-between border-4 border-ink bg-accent-red p-3 text-white shadow-brutal">
+              <p className="text-lg font-black uppercase leading-tight tracking-tight">
                 Network failure. Check your connection
               </p>
             </div>
