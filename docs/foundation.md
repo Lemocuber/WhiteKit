@@ -12,6 +12,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Long-running shell commands must run off the Tauri app thread, and the UI must enter its processing view before install/remove execution begins
 - The processing view must stay open after a run finishes until the user explicitly acknowledges it; queued items count as settled once they either succeed or fail
 - On macOS, shell commands must run through the user's login+interactive shell so PATH-managed tools like `nvm` Node installs and npm-global CLIs are detectable from the app
+- Windows release builds must use the GUI subsystem, and backend shell child processes must run hidden so tool detection/install/remove never opens a visible console window
 - Tool lifecycle policy lives in the frontend catalog: detect/install/uninstall commands, dependency metadata, and version parsing
 - Installed state is only trusted when detect command output matches the catalog version regex
 - Install queues expand missing dependencies before selected tools; uninstall never removes dependencies automatically

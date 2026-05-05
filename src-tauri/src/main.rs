@@ -1,3 +1,5 @@
+#![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
+
 use std::{
   env,
   process::Command,
@@ -12,6 +14,9 @@ use tauri::Emitter;
 
 const NETWORK_SAMPLE_EVENT: &str = "network-traffic-sample";
 const NETWORK_SAMPLE_INTERVAL: Duration = Duration::from_secs(1);
+
+#[cfg(target_os = "windows")]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -50,7 +55,17 @@ fn shell_program_and_args(command: &str, shell_env: Option<&str>) -> (String, Ve
 fn execute_shell(command: String) -> ShellResult {
   let shell_env = env::var("SHELL").ok();
   let (program, args) = shell_program_and_args(&command, shell_env.as_deref());
-  let output = Command::new(program).args(args).output();
+  let mut shell = Command::new(program);
+  shell.args(args);
+
+  #[cfg(target_os = "windows")]
+  {
+    use std::os::windows::process::CommandExt;
+
+    shell.creation_flags(CREATE_NO_WINDOW);
+  }
+
+  let output = shell.output();
 
   match output {
     Ok(output) => ShellResult {
@@ -134,5 +149,14 @@ mod tests {
 
     assert_eq!(program, "/bin/bash");
     assert_eq!(args, vec!["-l", "-i", "-c", "codex --version"]);
+  }
+
+  #[test]
+  #[cfg(target_os = "windows")]
+  fn windows_uses_cmd_shell() {
+    let (program, args) = shell_program_and_args("python --version", None);
+
+    assert_eq!(program, "cmd");
+    assert_eq!(args, vec!["/C", "python --version"]);
   }
 }
