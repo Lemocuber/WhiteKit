@@ -14,6 +14,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Install queues expand missing dependencies before selected tools; uninstall never removes dependencies automatically
 - GitHub Actions builds macOS and Windows test artifacts on pushes to `dev`
 - Tool logos live in `src/assets/tools`; the WhiteKit mark lives in `public/brand/whitekit.svg` and doubles as the favicon
+- Tauri app icons are generated into `src-tauri/icons/` from `public/brand/whitekit.svg`; CI/native builds depend on those generated files being committed
 - Tool catalog and selection/filter model live in `src/lib/tools.ts`, with platform command metadata in `src/lib/toolCatalog.ts`
 - App shell lives in `src/app/App.tsx`; real process lifecycle and telemetry live in `src/app/hooks`, and the main screen sections live in `src/app/components`
 
