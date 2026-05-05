@@ -20,6 +20,12 @@ import {
 
 export type { ProcessType } from '@/lib/toolLifecycle'
 
+interface PendingProcess {
+  type: ProcessType
+  queue: ToolId[]
+  toolsAtStart: Tool[]
+}
+
 export function useToolProcessManager(runCommand: ShellRunner = runShell) {
   const [tools, setTools] = useState(createInitialTools)
   const [isProcessing, setIsProcessing] = useState(false)
@@ -28,6 +34,7 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
   const [pendingTasks, setPendingTasks] = useState<ToolId[]>([])
   const [completedTasks, setCompletedTasks] = useState<ToolId[]>([])
   const [failedTasks, setFailedTasks] = useState<ToolId[]>([])
+  const [pendingProcess, setPendingProcess] = useState<PendingProcess | null>(null)
   const [dots, setDots] = useState('')
 
   useEffect(() => {
@@ -72,6 +79,27 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
     return () => window.clearInterval(intervalId)
   }, [isProcessing])
 
+  useEffect(() => {
+    if (!pendingProcess) return
+
+    let isCancelled = false
+    const frameId = window.requestAnimationFrame(() => {
+      if (isCancelled) return
+
+      void runProcess(
+        pendingProcess.type,
+        pendingProcess.queue,
+        pendingProcess.toolsAtStart,
+        runCommand,
+      )
+    })
+
+    return () => {
+      isCancelled = true
+      window.cancelAnimationFrame(frameId)
+    }
+  }, [pendingProcess, runCommand])
+
   const handleToolToggle = (id: ToolId) => {
     if (isProcessing) return
     setTools((current) => toggleToolSelection(current, id))
@@ -89,7 +117,18 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
 
     if (nextQueue.length === 0) return
 
-    void runProcess(type, nextQueue, tools, runCommand)
+    setIsProcessing(true)
+    setProcessType(type)
+    setTaskQueue(nextQueue)
+    setPendingTasks(nextQueue)
+    setCompletedTasks([])
+    setFailedTasks([])
+    setDots('')
+    setPendingProcess({
+      type,
+      queue: nextQueue,
+      toolsAtStart: tools,
+    })
   }
 
   async function runProcess(
@@ -98,13 +137,7 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
     toolsAtStart: Tool[],
     commandRunner: ShellRunner,
   ) {
-    setIsProcessing(true)
-    setProcessType(type)
-    setTaskQueue(nextQueue)
-    setPendingTasks(nextQueue)
-    setCompletedTasks([])
-    setFailedTasks([])
-    setDots('')
+    setPendingProcess(null)
 
     for (const toolId of nextQueue) {
       const tool = toolsAtStart.find((item) => item.id === toolId)
@@ -138,6 +171,7 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
       setTaskQueue([])
       setCompletedTasks([])
       setFailedTasks([])
+      setPendingTasks([])
       setDots('')
     }, 2000)
   }

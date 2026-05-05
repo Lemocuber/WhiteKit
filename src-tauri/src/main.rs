@@ -34,8 +34,7 @@ fn shell_program_and_args(command: &str, shell_env: Option<&str>) -> (String, Ve
   ("sh".into(), vec!["-lc".into(), command.into()])
 }
 
-#[tauri::command]
-fn run_shell(command: String) -> ShellResult {
+fn execute_shell(command: String) -> ShellResult {
   let shell_env = env::var("SHELL").ok();
   let (program, args) = shell_program_and_args(&command, shell_env.as_deref());
   let output = Command::new(program).args(args).output();
@@ -52,6 +51,17 @@ fn run_shell(command: String) -> ShellResult {
       exit_code: -1,
     },
   }
+}
+
+#[tauri::command]
+async fn run_shell(command: String) -> ShellResult {
+  tauri::async_runtime::spawn_blocking(move || execute_shell(command))
+    .await
+    .unwrap_or_else(|error| ShellResult {
+      stdout: String::new(),
+      stderr: error.to_string(),
+      exit_code: -1,
+    })
 }
 
 fn main() {
