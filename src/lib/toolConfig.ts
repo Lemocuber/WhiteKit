@@ -48,6 +48,8 @@ const codexProviderKeys = {
   requires_openai_auth: 'true',
 }
 
+export const emptyToolConfigInput = (): ToolConfigInput => ({ baseUrl: '', apiKey: '', model: '' })
+
 export function getToolConfigValidationErrors(input: ToolConfigInput): ToolConfigValidationErrors {
   const baseUrl = input.baseUrl.trim()
   const apiKey = input.apiKey.trim()
@@ -240,6 +242,29 @@ export function buildToolConfigWrites(
   }]
 }
 
+export async function loadToolConfig(
+  target: ToolConfigTarget,
+  runShell: ShellRunner,
+  platform = detectToolPlatform(),
+): Promise<ToolConfigInput> {
+  const paths = getToolConfigPaths(target, platform)
+
+  if (target === 'codex') {
+    const authJson = await readConfigFile(paths.authJson!, runShell, platform)
+    const configToml = await readConfigFile(paths.configToml!, runShell, platform)
+
+    return {
+      baseUrl: readCodexConfigTomlValue(configToml, codexProviderSection, 'base_url'),
+      apiKey: readCodexAuthJsonApiKey(authJson),
+      model: readCodexRootModel(configToml),
+    }
+  }
+
+  const settingsJson = await readConfigFile(paths.settingsJson!, runShell, platform)
+
+  return readClaudeSettingsJson(settingsJson)
+}
+
 export async function saveToolConfig(
   target: ToolConfigTarget,
   input: ToolConfigInput,
@@ -344,6 +369,74 @@ function isTomlSection(line: string): boolean {
 
 function isNamedTomlSection(line: string, name: string): boolean {
   return new RegExp(`^\\s*\\[\\s*${escapeRegExp(name)}\\s*\\]\\s*(?:#.*)?$`).test(line)
+}
+
+function readCodexAuthJsonApiKey(content: string): string {
+  const value = parseJsonObject(content, 'Codex auth.json').OPENAI_API_KEY
+
+  return typeof value === 'string' ? value : ''
+}
+
+function readClaudeSettingsJson(content: string): ToolConfigInput {
+  const settings = parseJsonObject(content, 'Claude settings.json')
+  const env = settings.env
+
+  if (env !== undefined && !isPlainObject(env)) {
+    throw new ToolConfigError('Claude settings.json env must be an object')
+  }
+
+  const nextEnv = env as Record<string, unknown> | undefined
+
+  return {
+    baseUrl: typeof nextEnv?.ANTHROPIC_BASE_URL === 'string' ? nextEnv.ANTHROPIC_BASE_URL : '',
+    apiKey: typeof nextEnv?.ANTHROPIC_AUTH_TOKEN === 'string' ? nextEnv.ANTHROPIC_AUTH_TOKEN : '',
+    model: typeof settings.model === 'string' ? settings.model : '',
+  }
+}
+
+function readCodexRootModel(content: string): string {
+  const lines = normalizeTomlLines(content)
+  const rootEnd = lines.findIndex(isTomlSection)
+  const rootLines = rootEnd === -1 ? lines : lines.slice(0, rootEnd)
+
+  return readTomlKeyValue(rootLines, 'model')
+}
+
+function readCodexConfigTomlValue(content: string, section: string, key: string): string {
+  const lines = normalizeTomlLines(content)
+  const sectionIndex = lines.findIndex((line) => isNamedTomlSection(line, section))
+
+  if (sectionIndex === -1) return ''
+
+  const nextSectionOffset = lines.slice(sectionIndex + 1).findIndex(isTomlSection)
+  const sectionEnd = nextSectionOffset === -1 ? lines.length : sectionIndex + 1 + nextSectionOffset
+
+  return readTomlKeyValue(lines.slice(sectionIndex + 1, sectionEnd), key)
+}
+
+function readTomlKeyValue(lines: string[], key: string): string {
+  for (const line of lines) {
+    const match = new RegExp(`^\\s*${escapeRegExp(key)}\\s*=\\s*(.+?)\\s*(?:#.*)?$`).exec(line)
+
+    if (!match) continue
+
+    return parseTomlString(match[1].trim())
+  }
+
+  return ''
+}
+
+function parseTomlString(value: string): string {
+  if (!value) return ''
+  if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+    try {
+      return value.startsWith('"') ? JSON.parse(value) : value.slice(1, -1)
+    } catch {
+      throw new ToolConfigError('Codex config.toml contains an invalid string value')
+    }
+  }
+
+  return ''
 }
 
 function tomlString(value: string): string {

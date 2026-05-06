@@ -32,8 +32,10 @@ function App() {
   } = useToolProcessManager()
   const {
     isConfigViewOpen,
+    isLoadingConfig,
     isSavingConfig,
     configTarget,
+    configInput,
     configResult,
     startConfig,
     cancelConfig,
@@ -52,7 +54,10 @@ function App() {
       <section className="w-[80%] min-h-0 p-8 flex flex-col overflow-hidden border-r-4 border-ink relative">
         {isConfigViewOpen && configTarget ? (
           <ConfigView
+            key={`${configTarget}:${isLoadingConfig ? 'loading' : JSON.stringify(configInput)}`}
             configResult={configResult}
+            initialInput={configInput}
+            isLoading={isLoadingConfig}
             isSaving={isSavingConfig}
             onCancel={cancelConfig}
             onOkay={dismissConfigResult}
