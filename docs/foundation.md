@@ -16,6 +16,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Tool lifecycle policy lives in the frontend catalog: detect/install/uninstall commands, dependency metadata, and version parsing
 - Installed state is only trusted when detect command output matches the catalog version regex
 - Install queues expand missing dependencies before selected tools; uninstall never removes dependencies automatically
+- Platform package managers are first-class detect/install-only tools: macOS shows Homebrew, Windows shows Winget, and managed package installs depend on the current platform manager when missing
 - GitHub Actions builds macOS and Windows test artifacts on pushes to `dev`; macOS artifacts ship as a zipped unsigned `WhiteKit.app`, Windows artifacts ship as a zipped portable `whitekit.exe`
 - Tool logos live in `src/assets/tools`; the WhiteKit mark lives in `public/brand/whitekit.svg` and doubles as the favicon
 - Native desktop app icons are generated into `src-tauri/icons/` from `public/brand/whitekit-native-icon.svg`, which places the existing WhiteKit SVG on a white square background; CI/native builds depend on those generated files being committed

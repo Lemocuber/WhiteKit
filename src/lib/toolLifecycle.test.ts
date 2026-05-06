@@ -22,16 +22,35 @@ test('parseToolVersion returns the first semver-looking version', () => {
 test('expandInstallQueue adds missing dependencies before selected tools', () => {
   const states = catalog.map((tool) => ({ id: tool.id, status: 'missing' as const }))
 
-  assert.deepEqual(expandInstallQueue(['claude', 'codex'], states, catalog), ['nodejs', 'claude', 'codex'])
+  assert.deepEqual(expandInstallQueue(['claude', 'codex'], states, catalog), ['homebrew', 'nodejs', 'claude', 'codex'])
 })
 
 test('expandInstallQueue skips dependencies that are already installed', () => {
   const states = catalog.map((tool) => ({
     id: tool.id,
-    status: tool.id === 'nodejs' ? 'installed' as const : 'missing' as const,
+    status: tool.id === 'nodejs' || tool.id === 'homebrew' ? 'installed' as const : 'missing' as const,
   }))
 
   assert.deepEqual(expandInstallQueue(['claude', 'codex'], states, catalog), ['claude', 'codex'])
+})
+
+test('createToolCatalog exposes only platform package managers', () => {
+  const macosIds = createToolCatalog('macos').map((tool) => tool.id)
+  const windowsIds = createToolCatalog('windows').map((tool) => tool.id)
+
+  assert.equal(macosIds.includes('homebrew'), true)
+  assert.equal(macosIds.includes('winget'), false)
+  assert.equal(windowsIds.includes('homebrew'), false)
+  assert.equal(windowsIds.includes('winget'), true)
+})
+
+test('expandInstallQueue adds the current platform package manager before managed tools', () => {
+  const windowsCatalog = createToolCatalog('windows')
+  const macosStates = catalog.map((tool) => ({ id: tool.id, status: 'missing' as const }))
+  const windowsStates = windowsCatalog.map((tool) => ({ id: tool.id, status: 'missing' as const }))
+
+  assert.deepEqual(expandInstallQueue(['git'], macosStates, catalog), ['homebrew', 'git'])
+  assert.deepEqual(expandInstallQueue(['git'], windowsStates, windowsCatalog), ['winget', 'git'])
 })
 
 test('detectTool marks tools installed only when command output matches the version regex', async () => {
@@ -76,6 +95,23 @@ test('runToolAction marks failed uninstalls without running a post-action refres
 
   assert.deepEqual(result, { status: 'failed', version: null })
   assert.deepEqual(calls, [codex.uninstall])
+})
+
+test('empty package manager uninstall command leaves remove to fail through detection', async () => {
+  const homebrew = byId.get('homebrew')!
+  const calls: string[] = []
+  const result = await runToolAction(homebrew, 'remove', async (command) => {
+    calls.push(command)
+    return command === homebrew.uninstall
+      ? shellResult('', '', 0)
+      : shellResult('Homebrew 4.5.0', '', 0)
+  })
+  const nextState = resolveToolActionState(result, { id: 'homebrew', status: 'installed', version: '4.5.0' }, 'remove')
+
+  assert.equal(homebrew.uninstall, '')
+  assert.deepEqual(result, { status: 'installed', version: '4.5.0' })
+  assert.deepEqual(nextState, { status: 'installed', version: '4.5.0' })
+  assert.deepEqual(calls, [homebrew.uninstall, homebrew.detect])
 })
 
 test('runToolAction refreshes detection after successful installs', async () => {

@@ -1,4 +1,4 @@
-export type ToolId = 'nodejs' | 'python' | 'git' | 'claude' | 'codex'
+export type ToolId = 'homebrew' | 'winget' | 'nodejs' | 'python' | 'git' | 'claude' | 'codex'
 export type ToolStatus = 'checking' | 'installed' | 'missing' | 'processing' | 'failed'
 export type ToolPlatform = 'macos' | 'windows'
 
@@ -25,10 +25,12 @@ interface ToolCatalogSource {
   id: ToolId
   name: string
   description: string
-  detect: PlatformCommands
-  install: PlatformCommands
-  uninstall: PlatformCommands
+  platforms?: ToolPlatform[]
+  detect: Partial<PlatformCommands>
+  install: Partial<PlatformCommands>
+  uninstall: Partial<PlatformCommands>
   dependencies: ToolId[]
+  platformDependencies?: Partial<Record<ToolPlatform, ToolId[]>>
   versionRegex: string
 }
 
@@ -36,8 +38,43 @@ export const defaultVersionRegex = String.raw`\d+\.\d+\.\d+`
 
 const brewNode = 'brew install node'
 const wingetAgreements = '--accept-package-agreements --accept-source-agreements'
+const emptyUninstall = ''
 
 const toolCatalogSources: ToolCatalogSource[] = [
+  {
+    id: 'homebrew',
+    name: 'Homebrew',
+    description: 'macOS package manager for developer tooling',
+    platforms: ['macos'],
+    detect: {
+      macos: 'brew --version',
+    },
+    install: {
+      macos: 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
+    },
+    uninstall: {
+      macos: emptyUninstall,
+    },
+    dependencies: [],
+    versionRegex: defaultVersionRegex,
+  },
+  {
+    id: 'winget',
+    name: 'Winget',
+    description: 'Windows package manager for developer tooling',
+    platforms: ['windows'],
+    detect: {
+      windows: 'winget --version',
+    },
+    install: {
+      windows: 'powershell -NoProfile -Command "Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe"',
+    },
+    uninstall: {
+      windows: emptyUninstall,
+    },
+    dependencies: [],
+    versionRegex: defaultVersionRegex,
+  },
   {
     id: 'nodejs',
     name: 'Node.js',
@@ -55,6 +92,10 @@ const toolCatalogSources: ToolCatalogSource[] = [
       windows: 'winget uninstall --id OpenJS.NodeJS.LTS -e',
     },
     dependencies: [],
+    platformDependencies: {
+      macos: ['homebrew'],
+      windows: ['winget'],
+    },
     versionRegex: defaultVersionRegex,
   },
   {
@@ -74,6 +115,10 @@ const toolCatalogSources: ToolCatalogSource[] = [
       windows: 'winget uninstall --id Python.Python.3.13 -e',
     },
     dependencies: [],
+    platformDependencies: {
+      macos: ['homebrew'],
+      windows: ['winget'],
+    },
     versionRegex: defaultVersionRegex,
   },
   {
@@ -93,6 +138,10 @@ const toolCatalogSources: ToolCatalogSource[] = [
       windows: 'winget uninstall --id Git.Git -e',
     },
     dependencies: [],
+    platformDependencies: {
+      macos: ['homebrew'],
+      windows: ['winget'],
+    },
     versionRegex: defaultVersionRegex,
   },
   {
@@ -136,16 +185,18 @@ const toolCatalogSources: ToolCatalogSource[] = [
 ]
 
 export function createToolCatalog(platform = detectToolPlatform()): ToolCatalogEntry[] {
-  return toolCatalogSources.map((tool) => ({
-    id: tool.id,
-    name: tool.name,
-    description: tool.description,
-    detect: tool.detect[platform],
-    install: tool.install[platform],
-    uninstall: tool.uninstall[platform],
-    dependencies: [...tool.dependencies],
-    versionRegex: tool.versionRegex,
-  }))
+  return toolCatalogSources
+    .filter((tool) => !tool.platforms || tool.platforms.includes(platform))
+    .map((tool) => ({
+      id: tool.id,
+      name: tool.name,
+      description: tool.description,
+      detect: tool.detect[platform] ?? '',
+      install: tool.install[platform] ?? '',
+      uninstall: tool.uninstall[platform] ?? '',
+      dependencies: [...(tool.platformDependencies?.[platform] ?? tool.dependencies)],
+      versionRegex: tool.versionRegex,
+    }))
 }
 
 export function detectToolPlatform(platform = globalThis.navigator?.platform ?? ''): ToolPlatform {

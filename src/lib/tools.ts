@@ -1,8 +1,10 @@
 import claudeCodeIcon from '@/assets/tools/claude-code.svg'
 import codexIcon from '@/assets/tools/codex.svg'
 import gitIcon from '@/assets/tools/git.svg'
+import homebrewIcon from '@/assets/tools/homebrew.svg'
 import nodejsIcon from '@/assets/tools/nodejs.svg'
 import pythonIcon from '@/assets/tools/python.svg'
+import wingetIcon from '@/assets/tools/winget.svg'
 import { createToolCatalog, type ToolCatalogEntry, type ToolId, type ToolStatus } from '@/lib/toolCatalog'
 
 export type { ToolId, ToolStatus } from '@/lib/toolCatalog'
@@ -25,6 +27,8 @@ export const toolFilterTabs: Array<{ id: ToolFilter; label: string }> = [
 ]
 
 const toolIcons: Record<ToolId, string> = {
+  homebrew: homebrewIcon,
+  winget: wingetIcon,
   nodejs: nodejsIcon,
   python: pythonIcon,
   git: gitIcon,
