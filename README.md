@@ -12,7 +12,7 @@ This repo contains the frontend foundation and a minimal Tauri backend:
 
 WhiteKit launches as a normal desktop app on macOS and Windows. The backend exposes a single shell execution command that returns `stdout`, `stderr`, and `exitCode`; tool lifecycle policy stays in the frontend catalog.
 
-The native app icon set under `src-tauri/icons/` is generated from `public/brand/whitekit-native-icon.svg`, which wraps the existing `public/brand/whitekit.svg` mark on a white background for desktop icon use, and must stay committed for Tauri/CI builds.
+The native app icon set under `src-tauri/icons/` is generated from `public/brand/whitekit-native-icon.svg`, which wraps the existing `public/brand/whitekit.svg` mark on an inset macOS-style continuous-rounded white desktop icon tile with transparent outer padding, and must stay committed for Tauri/CI builds.
 
 ## Scripts
 
