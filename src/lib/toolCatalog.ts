@@ -34,12 +34,6 @@ interface ToolCatalogSource {
   versionRegex: string
 }
 
-export const defaultVersionRegex = String.raw`\d+\.\d+\.\d+`
-
-const brewNode = 'brew install node'
-const wingetAgreements = '--accept-package-agreements --accept-source-agreements'
-const emptyUninstall = ''
-
 const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'homebrew',
@@ -53,10 +47,10 @@ const toolCatalogSources: ToolCatalogSource[] = [
       macos: 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
     },
     uninstall: {
-      macos: emptyUninstall,
+      macos: '',
     },
     dependencies: [],
-    versionRegex: defaultVersionRegex,
+    versionRegex: '\\d+\\.\\d+\\.\\d+',
   },
   {
     id: 'winget',
@@ -70,10 +64,10 @@ const toolCatalogSources: ToolCatalogSource[] = [
       windows: 'powershell -NoProfile -Command "Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe"',
     },
     uninstall: {
-      windows: emptyUninstall,
+      windows: '',
     },
     dependencies: [],
-    versionRegex: defaultVersionRegex,
+    versionRegex: '\\d+\\.\\d+\\.\\d+',
   },
   {
     id: 'nodejs',
@@ -84,8 +78,8 @@ const toolCatalogSources: ToolCatalogSource[] = [
       windows: 'node --version',
     },
     install: {
-      macos: brewNode,
-      windows: `winget install --id OpenJS.NodeJS.LTS -e ${wingetAgreements}`,
+      macos: 'brew install node',
+      windows: 'winget install --id OpenJS.NodeJS.LTS -e --accept-package-agreements --accept-source-agreements',
     },
     uninstall: {
       macos: 'brew uninstall node',
@@ -96,7 +90,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
       macos: ['homebrew'],
       windows: ['winget'],
     },
-    versionRegex: defaultVersionRegex,
+    versionRegex: '\\d+\\.\\d+\\.\\d+',
   },
   {
     id: 'python',
@@ -108,7 +102,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
     },
     install: {
       macos: 'brew install python',
-      windows: `winget install --id Python.Python.3.13 -e ${wingetAgreements}`,
+      windows: 'winget install --id Python.Python.3.13 -e --accept-package-agreements --accept-source-agreements',
     },
     uninstall: {
       macos: 'brew uninstall python',
@@ -119,7 +113,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
       macos: ['homebrew'],
       windows: ['winget'],
     },
-    versionRegex: defaultVersionRegex,
+    versionRegex: '\\d+\\.\\d+\\.\\d+',
   },
   {
     id: 'git',
@@ -131,7 +125,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
     },
     install: {
       macos: 'brew install git',
-      windows: `winget install --id Git.Git -e ${wingetAgreements}`,
+      windows: 'winget install --id Git.Git -e --accept-package-agreements --accept-source-agreements',
     },
     uninstall: {
       macos: 'brew uninstall git',
@@ -142,7 +136,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
       macos: ['homebrew'],
       windows: ['winget'],
     },
-    versionRegex: defaultVersionRegex,
+    versionRegex: '\\d+\\.\\d+\\.\\d+',
   },
   {
     id: 'claude',
@@ -161,7 +155,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
       windows: 'npm uninstall -g @anthropic-ai/claude-code',
     },
     dependencies: ['nodejs'],
-    versionRegex: defaultVersionRegex,
+    versionRegex: '\\d+\\.\\d+\\.\\d+',
   },
   {
     id: 'codex',
@@ -180,7 +174,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
       windows: 'npm uninstall -g @openai/codex',
     },
     dependencies: ['nodejs'],
-    versionRegex: defaultVersionRegex,
+    versionRegex: '\\d+\\.\\d+\\.\\d+',
   },
 ]
 
