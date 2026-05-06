@@ -92,19 +92,12 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
         version: null,
       })))
 
-      const results = await Promise.all(
-        createInitialTools().map(async (tool) => [tool.id, await detectTool(tool, runCommand)] as const),
-      )
-
-      if (!isCurrent) return
-
-      setTools((current) => current.map((tool) => {
-        const result = results.find(([id]) => id === tool.id)?.[1]
-
-        return result
-          ? { ...tool, status: result.status, version: result.version }
-          : tool
-      }))
+      createInitialTools().forEach((tool) => {
+        void detectTool(tool, runCommand).then((result) => {
+          if (!isCurrent) return
+          setTools((current) => updateToolState(current, tool.id, result.status, result.version))
+        })
+      })
     }
 
     void refreshInitialTools()
