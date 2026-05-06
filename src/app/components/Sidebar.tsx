@@ -5,24 +5,34 @@ import { buttonInteractiveClasses, hoverHitboxClasses } from '@/app/ui'
 import { launchTerminal } from '@/lib/shell'
 
 interface SidebarProps {
+  canConfigure: boolean
   canInstall: boolean
   canUninstall: boolean
+  configureText: string
   dots: string
   installText: string
+  isConfigViewOpen: boolean
+  isSavingConfig: boolean
   isProcessViewOpen: boolean
   isRunningProcess: boolean
+  onConfigure: () => void
   processType: ProcessType | null
   removeText: string
   startProcess: (type: ProcessType) => void
 }
 
 export function Sidebar({
+  canConfigure,
   canInstall,
   canUninstall,
+  configureText,
   dots,
   installText,
+  isConfigViewOpen,
+  isSavingConfig,
   isProcessViewOpen,
   isRunningProcess,
+  onConfigure,
   processType,
   removeText,
   startProcess,
@@ -38,8 +48,11 @@ export function Sidebar({
     : networkState === 'offline'
       ? 'Network Error'
       : 'Connecting'
+  const isActionLocked = isProcessViewOpen || isConfigViewOpen || isSavingConfig
 
   const handleTerminalClick = () => {
+    if (isActionLocked) return
+
     void launchTerminal().catch((error) => {
       console.error('Failed to launch terminal', error)
     })
@@ -106,9 +119,9 @@ export function Sidebar({
             <button
               type="button"
               onClick={() => startProcess('remove')}
-              disabled={!canUninstall || isProcessViewOpen}
+              disabled={!canUninstall || isActionLocked}
               className={`w-full border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
-                canUninstall && !isProcessViewOpen
+                canUninstall && !isActionLocked
                   ? `bg-accent-magenta text-white shadow-brutal ${buttonInteractiveClasses}`
                   : isProcessViewOpen && processType === 'remove'
                     ? 'bg-accent-magenta text-white shadow-brutal'
@@ -122,10 +135,27 @@ export function Sidebar({
           <div className={hoverHitboxClasses}>
             <button
               type="button"
-              onClick={() => startProcess('install')}
-              disabled={!canInstall || isProcessViewOpen}
+              onClick={onConfigure}
+              disabled={!canConfigure || isActionLocked}
               className={`w-full border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
-                canInstall && !isProcessViewOpen
+                canConfigure && !isActionLocked
+                  ? `bg-accent-blue text-white shadow-brutal ${buttonInteractiveClasses}`
+                  : isConfigViewOpen
+                    ? 'bg-accent-blue text-white shadow-brutal'
+                    : 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
+              }`}
+            >
+              {isSavingConfig ? 'Saving' : configureText}
+            </button>
+          </div>
+
+          <div className={hoverHitboxClasses}>
+            <button
+              type="button"
+              onClick={() => startProcess('install')}
+              disabled={!canInstall || isActionLocked}
+              className={`w-full border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
+                canInstall && !isActionLocked
                   ? `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}`
                   : isProcessViewOpen && processType === 'install'
                     ? 'bg-accent-lime shadow-brutal'
@@ -142,7 +172,12 @@ export function Sidebar({
             <button
               type="button"
               onClick={handleTerminalClick}
-              className={`flex w-full items-center justify-center gap-3 border-4 border-ink bg-white py-4 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
+              disabled={isActionLocked}
+              className={`flex w-full items-center justify-center gap-3 border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
+                isActionLocked
+                  ? 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
+                  : `bg-white shadow-brutal ${buttonInteractiveClasses}`
+              }`}
             >
               <span>Terminal</span>
               <img src={terminalIcon} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />

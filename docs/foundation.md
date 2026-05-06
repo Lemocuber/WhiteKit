@@ -14,6 +14,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - On macOS, shell commands must run through the user's login+interactive shell so PATH-managed tools like `nvm` Node installs and npm-global CLIs are detectable from the app
 - Windows release builds must use the GUI subsystem, and backend shell child processes must run hidden so tool detection/install/remove never opens a visible console window
 - Tool lifecycle policy lives in the frontend catalog: detect/install/uninstall commands, dependency metadata, and version parsing
+- AI CLI config for Codex and Claude Code is frontend-owned in `src/lib/toolConfig.ts`; it reads, merges, and writes config files through the existing shell bridge, including optional model selection and required auth-mode fields, instead of adding native file APIs
 - Installed state is only trusted when detect command output matches the catalog version regex
 - Install queues expand missing dependencies before selected tools; uninstall never removes dependencies automatically
 - Platform package managers are first-class detect/install-only tools: macOS shows Homebrew, Windows shows Winget, and managed package installs depend on the current platform manager when missing
