@@ -17,6 +17,7 @@ const byId = new Map(catalog.map((tool) => [tool.id, tool]))
 test('parseToolVersion returns the first semver-looking version', () => {
   assert.equal(parseToolVersion('Codex CLI 1.2.3\nbuild 9', String.raw`\d+\.\d+\.\d+`), '1.2.3')
   assert.equal(parseToolVersion('no version here', String.raw`\d+\.\d+\.\d+`), null)
+  assert.equal(parseToolVersion('openclaw/2026.3.23-2', String.raw`\d+\.\d+\.\d+(?:-\d+)?`), '2026.3.23-2')
 })
 
 test('expandInstallQueue adds missing dependencies before selected tools', () => {
@@ -32,6 +33,12 @@ test('expandInstallQueue skips dependencies that are already installed', () => {
   }))
 
   assert.deepEqual(expandInstallQueue(['claude', 'codex'], states, catalog), ['claude', 'codex'])
+})
+
+test('expandInstallQueue reuses nodejs for additional npm CLIs', () => {
+  const states = catalog.map((tool) => ({ id: tool.id, status: 'missing' as const }))
+
+  assert.deepEqual(expandInstallQueue(['gemini', 'openclaw'], states, catalog), ['homebrew', 'nodejs', 'gemini', 'openclaw'])
 })
 
 test('createToolCatalog exposes only platform package managers', () => {

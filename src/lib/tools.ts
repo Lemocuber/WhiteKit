@@ -1,8 +1,10 @@
 import claudeCodeIcon from '@/assets/tools/claude-code.svg'
 import codexIcon from '@/assets/tools/codex.svg'
+import geminiCliIcon from '@/assets/tools/gemini-cli.svg'
 import gitIcon from '@/assets/tools/git.svg'
 import homebrewIcon from '@/assets/tools/homebrew.svg'
 import nodejsIcon from '@/assets/tools/nodejs.svg'
+import openclawIcon from '@/assets/tools/openclaw.svg'
 import pythonIcon from '@/assets/tools/python.svg'
 import wingetIcon from '@/assets/tools/winget.svg'
 import { createToolCatalog, type ToolCatalogEntry, type ToolId, type ToolStatus } from '@/lib/toolCatalog'
@@ -34,6 +36,8 @@ const toolIcons: Record<ToolId, string> = {
   git: gitIcon,
   claude: claudeCodeIcon,
   codex: codexIcon,
+  gemini: geminiCliIcon,
+  openclaw: openclawIcon,
 }
 
 export function createInitialTools(): Tool[] {

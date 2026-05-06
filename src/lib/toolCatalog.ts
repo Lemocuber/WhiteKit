@@ -1,4 +1,13 @@
-export type ToolId = 'homebrew' | 'winget' | 'nodejs' | 'python' | 'git' | 'claude' | 'codex'
+export type ToolId =
+  | 'homebrew'
+  | 'winget'
+  | 'nodejs'
+  | 'python'
+  | 'git'
+  | 'claude'
+  | 'codex'
+  | 'gemini'
+  | 'openclaw'
 export type ToolStatus = 'checking' | 'installed' | 'missing' | 'processing' | 'failed'
 export type ToolPlatform = 'macos' | 'windows'
 
@@ -175,6 +184,44 @@ const toolCatalogSources: ToolCatalogSource[] = [
     },
     dependencies: ['nodejs'],
     versionRegex: '\\d+\\.\\d+\\.\\d+',
+  },
+  {
+    id: 'gemini',
+    name: 'Gemini CLI',
+    description: 'Google CLI for agentic coding',
+    detect: {
+      macos: 'gemini --version',
+      windows: 'gemini --version',
+    },
+    install: {
+      macos: 'npm install -g @google/gemini-cli',
+      windows: 'npm install -g @google/gemini-cli',
+    },
+    uninstall: {
+      macos: 'npm uninstall -g @google/gemini-cli',
+      windows: 'npm uninstall -g @google/gemini-cli',
+    },
+    dependencies: ['nodejs'],
+    versionRegex: '\\d+\\.\\d+\\.\\d+',
+  },
+  {
+    id: 'openclaw',
+    name: 'OpenClaw',
+    description: 'Multi-channel AI gateway CLI',
+    detect: {
+      macos: 'openclaw --version',
+      windows: 'openclaw --version',
+    },
+    install: {
+      macos: 'npm install -g openclaw',
+      windows: 'npm install -g openclaw',
+    },
+    uninstall: {
+      macos: 'npm uninstall -g openclaw',
+      windows: 'npm uninstall -g openclaw',
+    },
+    dependencies: ['nodejs'],
+    versionRegex: '\\d+\\.\\d+\\.\\d+(?:-\\d+)?',
   },
 ]
 
