@@ -10,19 +10,22 @@ import {
 } from '@/lib/toolConfig'
 import type { ShellRunner } from '@/lib/toolLifecycle'
 
-interface ToolConfigResult {
-  type: 'success' | 'error'
-  message: string
-}
-
 export function useToolConfigManager(runCommand: ShellRunner = runShell) {
   const [isConfigViewOpen, setIsConfigViewOpen] = useState(false)
   const [isLoadingConfig, setIsLoadingConfig] = useState(false)
   const [isSavingConfig, setIsSavingConfig] = useState(false)
   const [configTarget, setConfigTarget] = useState<ToolConfigTarget | null>(null)
   const [configInput, setConfigInput] = useState<ToolConfigInput>(emptyToolConfigInput)
-  const [configResult, setConfigResult] = useState<ToolConfigResult | null>(null)
+  const [configError, setConfigError] = useState<string | null>(null)
   const loadIdRef = useRef(0)
+
+  const resetConfigState = () => {
+    setIsConfigViewOpen(false)
+    setIsLoadingConfig(false)
+    setConfigTarget(null)
+    setConfigInput(emptyToolConfigInput())
+    setConfigError(null)
+  }
 
   const startConfig = (target: ToolConfigTarget) => {
     if (isLoadingConfig || isSavingConfig) return
@@ -34,7 +37,7 @@ export function useToolConfigManager(runCommand: ShellRunner = runShell) {
     setIsLoadingConfig(true)
     setConfigTarget(target)
     setConfigInput(emptyToolConfigInput())
-    setConfigResult(null)
+    setConfigError(null)
 
     void loadToolConfig(target, runCommand).then((input) => {
       if (loadId !== loadIdRef.current) return
@@ -43,10 +46,7 @@ export function useToolConfigManager(runCommand: ShellRunner = runShell) {
     }).catch((error: unknown) => {
       if (loadId !== loadIdRef.current) return
 
-      setConfigResult({
-        type: 'error',
-        message: error instanceof Error ? error.message : 'Configuration failed',
-      })
+      setConfigError(error instanceof Error ? error.message : 'Configuration failed')
     }).finally(() => {
       if (loadId !== loadIdRef.current) return
 
@@ -58,44 +58,31 @@ export function useToolConfigManager(runCommand: ShellRunner = runShell) {
     if (isSavingConfig) return
 
     loadIdRef.current += 1
-    setIsConfigViewOpen(false)
-    setIsLoadingConfig(false)
-    setConfigTarget(null)
-    setConfigInput(emptyToolConfigInput())
-    setConfigResult(null)
+    resetConfigState()
   }
 
   const saveConfig = async (input: ToolConfigInput) => {
     if (!configTarget || isSavingConfig) return
 
     setIsSavingConfig(true)
-    setConfigResult(null)
+    setConfigError(null)
 
     try {
       await saveToolConfig(configTarget, input, runCommand)
-      setConfigResult({
-        type: 'success',
-        message: `${configTarget === 'codex' ? 'Codex' : 'Claude Code'} configuration saved`,
-      })
+      loadIdRef.current += 1
+      resetConfigState()
     } catch (error) {
-      setConfigResult({
-        type: 'error',
-        message: error instanceof Error ? error.message : 'Configuration failed',
-      })
+      setConfigError(error instanceof Error ? error.message : 'Configuration failed')
     } finally {
       setIsSavingConfig(false)
     }
   }
 
-  const dismissConfigResult = () => {
-    if (isLoadingConfig || isSavingConfig || !configResult) return
+  const dismissConfigError = () => {
+    if (isLoadingConfig || isSavingConfig || !configError) return
 
     loadIdRef.current += 1
-    setIsConfigViewOpen(false)
-    setIsLoadingConfig(false)
-    setConfigTarget(null)
-    setConfigInput(emptyToolConfigInput())
-    setConfigResult(null)
+    resetConfigState()
   }
 
   return {
@@ -104,10 +91,10 @@ export function useToolConfigManager(runCommand: ShellRunner = runShell) {
     isSavingConfig,
     configTarget,
     configInput,
-    configResult,
+    configError,
     startConfig,
     cancelConfig,
     saveConfig,
-    dismissConfigResult,
+    dismissConfigError,
   }
 }

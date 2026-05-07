@@ -36,11 +36,11 @@ function App() {
     isSavingConfig,
     configTarget,
     configInput,
-    configResult,
+    configError,
     startConfig,
     cancelConfig,
     saveConfig,
-    dismissConfigResult,
+    dismissConfigError,
   } = useToolConfigManager()
   const filteredTools = getFilteredTools(tools, activeFilter)
   const selectedTools = tools.filter((tool) => tool.selected)
@@ -55,12 +55,12 @@ function App() {
         {isConfigViewOpen && configTarget ? (
           <ConfigView
             key={`${configTarget}:${isLoadingConfig ? 'loading' : JSON.stringify(configInput)}`}
-            configResult={configResult}
+            configError={configError}
             initialInput={configInput}
             isLoading={isLoadingConfig}
             isSaving={isSavingConfig}
             onCancel={cancelConfig}
-            onOkay={dismissConfigResult}
+            onDismissError={dismissConfigError}
             onSave={saveConfig}
             target={configTarget}
           />

@@ -9,23 +9,23 @@ import {
 } from '@/lib/toolConfig'
 
 interface ConfigViewProps {
-  configResult: { type: 'success' | 'error'; message: string } | null
+  configError: string | null
   initialInput: ToolConfigInput
   isLoading: boolean
   isSaving: boolean
   onCancel: () => void
-  onOkay: () => void
+  onDismissError: () => void
   onSave: (input: ToolConfigInput) => Promise<void>
   target: ToolConfigTarget
 }
 
 export function ConfigView({
-  configResult,
+  configError,
   initialInput,
   isLoading,
   isSaving,
   onCancel,
-  onOkay,
+  onDismissError,
   onSave,
   target,
 }: ConfigViewProps) {
@@ -33,9 +33,8 @@ export function ConfigView({
   const [model, setModel] = useState(initialInput.model)
   const [apiKey, setApiKey] = useState(initialInput.apiKey)
   const [errors, setErrors] = useState<ToolConfigValidationErrors>({})
-  const controlsDisabled = isLoading || isSaving || Boolean(configResult)
+  const controlsDisabled = isLoading || isSaving || Boolean(configError)
   const toolName = target === 'codex' ? 'Codex' : 'Claude Code'
-  const modelPlaceholder = target === 'codex' ? 'gpt-5.5' : 'opus-4.6'
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -51,14 +50,9 @@ export function ConfigView({
   return (
     <div className="z-10 flex h-full flex-col">
       <header className="mb-8 flex items-end justify-between gap-6">
-        <div>
-          <p className="mb-2 inline-block bg-ink px-2 py-0.5 font-mono text-xs font-bold uppercase text-canvas">
-            AI_CLI_CONFIG
-          </p>
-          <h2 className="text-5xl font-black uppercase leading-none tracking-tight">
-            Configure {toolName}
-          </h2>
-        </div>
+        <h2 className="text-5xl font-black uppercase leading-none tracking-tight">
+          Configure {toolName}
+        </h2>
       </header>
 
       <div className="relative min-h-0 flex-1 overflow-y-auto border-4 border-ink bg-white p-6 shadow-brutal">
@@ -85,7 +79,7 @@ export function ConfigView({
                     setErrors((current) => ({ ...current, baseUrl: undefined }))
                   }}
                   disabled={controlsDisabled}
-                  placeholder="https://api.example.com/v1"
+                  placeholder="..."
                   className="h-14 border-4 border-ink bg-canvas px-4 font-mono text-base font-bold outline-none disabled:cursor-not-allowed disabled:border-gray-400 disabled:text-gray-400"
                 />
                 {errors.baseUrl && (
@@ -105,7 +99,7 @@ export function ConfigView({
                     setErrors((current) => ({ ...current, model: undefined }))
                   }}
                   disabled={controlsDisabled}
-                  placeholder={modelPlaceholder}
+                  placeholder="..."
                   className="h-14 border-4 border-ink bg-canvas px-4 font-mono text-base font-bold outline-none disabled:cursor-not-allowed disabled:border-gray-400 disabled:text-gray-400"
                 />
               </label>
@@ -121,6 +115,7 @@ export function ConfigView({
                   }}
                   disabled={controlsDisabled}
                   autoComplete="off"
+                  placeholder="..."
                   className="h-14 border-4 border-ink bg-canvas px-4 font-mono text-base font-bold outline-none disabled:cursor-not-allowed disabled:border-gray-400 disabled:text-gray-400"
                 />
                 {errors.apiKey && (
@@ -130,24 +125,20 @@ export function ConfigView({
                 )}
               </label>
 
-              {configResult && (
+              {configError && (
                 <div
-                  className={`border-4 border-ink p-4 font-mono text-sm font-black uppercase tracking-widest ${
-                    configResult.type === 'success'
-                      ? 'bg-accent-lime text-ink'
-                      : 'bg-accent-red text-white'
-                  }`}
+                  className="border-4 border-ink bg-accent-red p-4 font-mono text-sm font-black uppercase tracking-widest text-white"
                 >
-                  {configResult.message}
+                  {configError}
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-4 pt-2">
-                {configResult ? (
+              <div className="flex flex-wrap justify-center gap-4 pt-2">
+                {configError ? (
                   <div className={hoverHitboxClasses}>
                     <button
                       type="button"
-                      onClick={onOkay}
+                      onClick={onDismissError}
                       className={`min-w-[180px] border-4 border-ink bg-accent-lime px-10 py-4 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
                     >
                       Okay
@@ -155,20 +146,6 @@ export function ConfigView({
                   </div>
                 ) : (
                   <>
-                    <div className={hoverHitboxClasses}>
-                      <button
-                        type="submit"
-                        disabled={controlsDisabled}
-                        className={`min-w-[180px] border-4 border-ink px-10 py-4 text-lg font-black uppercase tracking-widest ${
-                          controlsDisabled
-                            ? 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
-                            : `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}`
-                        }`}
-                      >
-                        {isSaving ? 'Saving' : 'Save'}
-                      </button>
-                    </div>
-
                     <div className={hoverHitboxClasses}>
                       <button
                         type="button"
@@ -181,6 +158,20 @@ export function ConfigView({
                         }`}
                       >
                         Cancel
+                      </button>
+                    </div>
+
+                    <div className={hoverHitboxClasses}>
+                      <button
+                        type="submit"
+                        disabled={controlsDisabled}
+                        className={`min-w-[180px] border-4 border-ink px-10 py-4 text-lg font-black uppercase tracking-widest ${
+                          controlsDisabled
+                            ? 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
+                            : `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}`
+                        }`}
+                      >
+                        {isSaving ? 'Saving' : 'Save'}
                       </button>
                     </div>
                   </>
