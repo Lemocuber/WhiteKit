@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "WhiteKit",
-  "version": "0.0.0",
-  "identifier": "com.whitekit.app",
+  "version": "1.0.0",
+  "identifier": "icu.lemoc.whitekit",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
