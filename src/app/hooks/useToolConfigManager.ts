@@ -46,7 +46,7 @@ export function useToolConfigManager(runCommand: ShellRunner = runShell) {
     }).catch((error: unknown) => {
       if (loadId !== loadIdRef.current) return
 
-      setConfigError(error instanceof Error ? error.message : 'Configuration failed')
+      setConfigError(error instanceof Error ? error.message : '配置失败')
     }).finally(() => {
       if (loadId !== loadIdRef.current) return
 
@@ -72,7 +72,7 @@ export function useToolConfigManager(runCommand: ShellRunner = runShell) {
       loadIdRef.current += 1
       resetConfigState()
     } catch (error) {
-      setConfigError(error instanceof Error ? error.message : 'Configuration failed')
+      setConfigError(error instanceof Error ? error.message : '配置失败')
     } finally {
       setIsSavingConfig(false)
     }

@@ -43,7 +43,7 @@ export function ProcessingView({
   return (
     <div className="flex h-full flex-col z-10">
       <h2 className="mb-8 flex items-baseline text-5xl font-black uppercase tracking-tight">
-        {processType === 'install' ? 'Installing' : 'Removing'} Tools
+        {processType === 'install' ? '正在安装工具' : '正在移除工具'}
       </h2>
 
       <div
@@ -52,7 +52,7 @@ export function ProcessingView({
       >
         <div className="absolute top-0 right-0 z-10">
           <div className="flex min-h-[32px] items-center border-b-4 border-l-4 border-ink bg-accent-blue px-2.5 py-1 text-xs font-mono font-black uppercase tracking-widest text-white">
-            PROGRESS_TRACKER
+            进度追踪
           </div>
         </div>
         <div className="flex flex-col gap-4 pt-8">
@@ -74,7 +74,7 @@ export function ProcessingView({
                 <div className="flex-1">
                   <h3 className="text-2xl font-black uppercase tracking-tight">{tool.name}</h3>
                   <p className="mt-1 font-mono text-xs font-bold">
-                    {didFail ? 'FAILED' : isDone ? 'COMPLETE' : isCurrent ? 'PROCESSING' : 'WAITING_IN_QUEUE'}
+                    {didFail ? '失败' : isDone ? '完成' : isCurrent ? '处理中' : '队列中等待'}
                   </p>
                 </div>
                 {(didFail || isDone || isCurrent) && (
@@ -113,7 +113,7 @@ export function ProcessingView({
           {isComplete && (
             <div className="flex flex-col items-center gap-4 pt-4 mb-12">
               <p className="text-center font-mono text-sm font-black uppercase tracking-widest">
-                {completedTasks.length} {processType === 'install' ? 'installed' : 'removed'}, {failedTasks.length} failed
+                {completedTasks.length} 个{processType === 'install' ? '已安装' : '已移除'}，{failedTasks.length} 个失败
               </p>
               <div className={hoverHitboxClasses}>
                 <button
@@ -121,7 +121,7 @@ export function ProcessingView({
                   onClick={onOkay}
                   className={`min-w-[180px] border-4 border-ink bg-accent-lime px-10 py-4 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
                 >
-                  Okay
+                  知道了
                 </button>
               </div>
             </div>

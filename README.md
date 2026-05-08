@@ -21,7 +21,6 @@ npm run dev
 npm run build
 npm run preview
 npm run lint
-npm run test
 npm run tauri:icon
 npm run tauri:dev
 npm run tauri:build

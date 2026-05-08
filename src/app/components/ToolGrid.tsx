@@ -42,9 +42,9 @@ export function ToolGrid({
           </button>
         </div>
         <div>
-          <h1 className="text-6xl leading-[0.9] font-black uppercase tracking-tight">WhiteKit</h1>
+          <h1 className="text-6xl leading-[0.9] font-black uppercase tracking-tight">小白箱</h1>
           <p className="mt-2 inline-block bg-ink px-2 py-0.5 font-mono text-xs font-bold text-canvas">
-            Dev Env Setup // Coldstart Toolkit
+            开发环境整理台 // WhiteKit
           </p>
         </div>
       </header>
@@ -121,8 +121,8 @@ function getHeaderFilterPresentation(filter: ToolFilter) {
     return {
       classes: 'bg-accent-lime text-ink',
       iconClasses: '',
-      ariaLabel: 'Tool filter: installed. Click to show available tools.',
-      title: 'Installed tools',
+      ariaLabel: '工具筛选：已安装。点击查看可安装工具。',
+      title: '已安装工具',
     }
   }
 
@@ -130,31 +130,31 @@ function getHeaderFilterPresentation(filter: ToolFilter) {
     return {
       classes: 'bg-accent-magenta text-white',
       iconClasses: 'brightness-0 invert',
-      ariaLabel: 'Tool filter: available. Click to show all tools.',
-      title: 'Available tools',
+      ariaLabel: '工具筛选：可安装。点击查看全部工具。',
+      title: '可安装工具',
     }
   }
 
   return {
     classes: 'bg-white text-ink',
     iconClasses: '',
-    ariaLabel: 'Tool filter: all. Click to show installed tools.',
-    title: 'All tools',
+    ariaLabel: '工具筛选：全部。点击查看已安装工具。',
+    title: '全部工具',
   }
 }
 
 function getStatusBadge(tool: Tool) {
   if (tool.status === 'checking') {
-    return { label: 'checking', classes: 'bg-white text-ink uppercase' }
+    return { label: '检测中', classes: 'bg-white text-ink uppercase' }
   }
 
   if (tool.status === 'processing') {
-    return { label: 'processing', classes: 'bg-ink text-canvas uppercase' }
+    return { label: '处理中', classes: 'bg-ink text-canvas uppercase' }
   }
 
   if (isToolInstalled(tool)) {
     return { label: `v${tool.version}`, classes: 'bg-accent-lime text-ink normal-case' }
   }
 
-  return { label: 'not installed', classes: 'bg-accent-magenta text-white uppercase' }
+  return { label: '未安装', classes: 'bg-accent-magenta text-white uppercase' }
 }

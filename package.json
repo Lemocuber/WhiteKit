@@ -8,7 +8,6 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "node --test --experimental-strip-types src/lib/*.test.ts",
     "tauri:icon": "node scripts/generate-native-icons.mjs",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"

@@ -47,7 +47,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'homebrew',
     name: 'Homebrew',
-    description: 'macOS package manager for developer tooling',
+    description: 'macOS 开发工具包管理器',
     platforms: ['macos'],
     detect: {
       macos: 'brew --version',
@@ -64,7 +64,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'winget',
     name: 'Winget',
-    description: 'Windows package manager for developer tooling',
+    description: 'Windows 开发工具包管理器',
     platforms: ['windows'],
     detect: {
       windows: 'winget --version',
@@ -81,7 +81,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'nodejs',
     name: 'Node.js',
-    description: 'JavaScript runtime for backend dev',
+    description: '用于后端开发的 JavaScript 运行时',
     detect: {
       macos: 'node --version',
       windows: 'node --version',
@@ -104,7 +104,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'python',
     name: 'Python',
-    description: 'High-level programming language',
+    description: '高级编程语言',
     detect: {
       macos: 'python3 --version',
       windows: 'python --version',
@@ -127,7 +127,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'git',
     name: 'Git',
-    description: 'Distributed version control system',
+    description: '分布式版本控制系统',
     detect: {
       macos: 'git --version',
       windows: 'git --version',
@@ -150,7 +150,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'claude',
     name: 'Claude Code',
-    description: 'Anthropic CLI for agentic coding',
+    description: 'Anthropic 的智能编程 CLI',
     detect: {
       macos: 'claude --version',
       windows: 'claude --version',
@@ -169,7 +169,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'codex',
     name: 'Codex',
-    description: 'OpenAI CLI for agentic coding',
+    description: 'OpenAI 的智能编程 CLI',
     detect: {
       macos: 'codex --version',
       windows: 'codex --version',
@@ -188,7 +188,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'gemini',
     name: 'Gemini CLI',
-    description: 'Google CLI for agentic coding',
+    description: 'Google 的智能编程 CLI',
     detect: {
       macos: 'gemini --version',
       windows: 'gemini --version',
@@ -207,7 +207,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'openclaw',
     name: 'OpenClaw',
-    description: 'Multi-channel AI gateway CLI',
+    description: '多通道 AI 网关 CLI',
     detect: {
       macos: 'openclaw --version',
       windows: 'openclaw --version',

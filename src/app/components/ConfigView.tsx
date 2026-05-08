@@ -51,7 +51,7 @@ export function ConfigView({
     <div className="z-10 flex h-full flex-col">
       <header className="mb-8 flex items-end justify-between gap-6">
         <h2 className="text-5xl font-black uppercase leading-none tracking-tight">
-          Configure {toolName.split(' ')[0]}
+          配置 {toolName.split(' ')[0]}
         </h2>
       </header>
 
@@ -65,12 +65,12 @@ export function ConfigView({
         <form onSubmit={handleSubmit} className="flex max-w-3xl flex-col gap-6 pt-8">
           {isLoading ? (
             <div className="border-4 border-ink bg-canvas p-4 font-mono text-sm font-black uppercase tracking-widest">
-              Loading existing configuration
+              正在读取现有配置
             </div>
           ) : (
             <>
               <label className="flex flex-col gap-2">
-                <span className="font-mono text-xs font-black uppercase tracking-widest">Base URL</span>
+                <span className="font-mono text-xs font-black uppercase tracking-widest">Base URL 地址</span>
                 <input
                   type="text"
                   value={baseUrl}
@@ -90,7 +90,7 @@ export function ConfigView({
               </label>
 
               <label className="flex flex-col gap-2">
-                <span className="font-mono text-xs font-black uppercase tracking-widest">Model (Optional)</span>
+                <span className="font-mono text-xs font-black uppercase tracking-widest">模型（可选）</span>
                 <input
                   type="text"
                   value={model}
@@ -141,7 +141,7 @@ export function ConfigView({
                       onClick={onDismissError}
                       className={`min-w-[180px] border-4 border-ink bg-accent-lime px-10 py-4 mb-12 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
                     >
-                      Okay
+                      知道了
                     </button>
                   </div>
                 ) : (
@@ -157,7 +157,7 @@ export function ConfigView({
                             : `bg-white shadow-brutal ${buttonInteractiveClasses}`
                         }`}
                       >
-                        Cancel
+                        取消
                       </button>
                     </div>
 
@@ -171,7 +171,7 @@ export function ConfigView({
                             : `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}`
                         }`}
                       >
-                        {isSaving ? 'Saving' : 'Save'}
+                        {isSaving ? '保存中' : '保存'}
                       </button>
                     </div>
                   </>

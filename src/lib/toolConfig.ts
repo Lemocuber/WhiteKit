@@ -56,17 +56,17 @@ export function getToolConfigValidationErrors(input: ToolConfigInput): ToolConfi
   const errors: ToolConfigValidationErrors = {}
 
   if (!apiKey) {
-    errors.apiKey = 'API key is required'
+    errors.apiKey = 'API Key 为必填项'
   }
 
   try {
     const parsed = new URL(baseUrl)
 
     if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      errors.baseUrl = 'Base URL must start with http:// or https://'
+      errors.baseUrl = 'Base URL 必须以 http:// 或 https:// 开头'
     }
   } catch {
-    errors.baseUrl = 'Enter a valid HTTP(S) base URL'
+    errors.baseUrl = '请输入有效的 HTTP(S) Base URL'
   }
 
   return errors
@@ -151,7 +151,7 @@ export function mergeClaudeSettingsJson(content: string, input: ToolConfigInput)
   if (env === undefined) {
     settings.env = {}
   } else if (!isPlainObject(env)) {
-    throw new ToolConfigError('Claude settings.json env must be an object')
+    throw new ToolConfigError('Claude settings.json 中的 env 必须是对象')
   }
 
   const nextEnv = settings.env as Record<string, unknown>
@@ -275,7 +275,7 @@ export async function saveToolConfig(
 
   const paths = getToolConfigPaths(target, platform)
 
-  await runChecked(makeDirCommand(paths.dir, platform), runShell, 'Failed to create config directory')
+  await runChecked(makeDirCommand(paths.dir, platform), runShell, '创建配置目录失败')
 
   const existing = target === 'codex'
     ? {
@@ -290,12 +290,12 @@ export async function saveToolConfig(
   const writes = buildToolConfigWrites(target, input, existing)
 
   for (const write of writes) {
-    await runChecked(writeFileCommand(write.path, write.content, platform), runShell, `Failed to write ${write.path}`)
+    await runChecked(writeFileCommand(write.path, write.content, platform), runShell, `写入失败 ${write.path}`)
   }
 }
 
 async function readConfigFile(path: string, runShell: ShellRunner, platform: ToolPlatform): Promise<string> {
-  const result = await runChecked(readFileCommand(path, platform), runShell, `Failed to read ${path}`)
+  const result = await runChecked(readFileCommand(path, platform), runShell, `读取失败 ${path}`)
 
   return result.stdout
 }
@@ -318,10 +318,10 @@ function parseJsonObject(content: string, label: string): Record<string, unknown
 
     if (isPlainObject(parsed)) return parsed
   } catch {
-    throw new ToolConfigError(`${label} must contain a JSON object`)
+    throw new ToolConfigError(`${label} 必须包含 JSON 对象`)
   }
 
-  throw new ToolConfigError(`${label} must contain a JSON object`)
+  throw new ToolConfigError(`${label} 必须包含 JSON 对象`)
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -382,7 +382,7 @@ function readClaudeSettingsJson(content: string): ToolConfigInput {
   const env = settings.env
 
   if (env !== undefined && !isPlainObject(env)) {
-    throw new ToolConfigError('Claude settings.json env must be an object')
+    throw new ToolConfigError('Claude settings.json 中的 env 必须是对象')
   }
 
   const nextEnv = env as Record<string, unknown> | undefined
@@ -432,7 +432,7 @@ function parseTomlString(value: string): string {
     try {
       return value.startsWith('"') ? JSON.parse(value) : value.slice(1, -1)
     } catch {
-      throw new ToolConfigError('Codex config.toml contains an invalid string value')
+      throw new ToolConfigError('Codex config.toml 包含无效的字符串值')
     }
   }
 

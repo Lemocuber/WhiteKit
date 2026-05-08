@@ -44,10 +44,10 @@ export function Sidebar({
       ? 'bg-accent-red text-white'
       : 'bg-white text-ink'
   const networkLabel = networkState === 'online'
-    ? 'System Online'
+    ? '系统在线'
     : networkState === 'offline'
-      ? 'Network Error'
-      : 'Connecting'
+      ? '网络异常'
+      : '连接中'
   const isActionLocked = isProcessViewOpen || isConfigViewOpen || isSavingConfig
 
   const handleTerminalClick = () => {
@@ -78,13 +78,13 @@ export function Sidebar({
           {networkState === 'offline' ? (
             <div className="flex flex-col justify-between border-4 border-ink bg-accent-red p-3 text-white shadow-brutal">
               <p className="text-lg font-black uppercase leading-tight tracking-tight">
-                Network failure. Check your connection
+                网络连接失败，请检查网络
               </p>
             </div>
           ) : (
             <div className="flex min-h-[128px] flex-col border-4 border-ink bg-white p-3 shadow-brutal">
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-md font-black uppercase tracking-widest">Speed</span>
+                <span className="text-md font-black uppercase tracking-widest">网速</span>
                 <span className="text-md font-mono font-black">
                   {networkState === 'online' ? currentSpeedLabel : '...'}
                 </span>
@@ -123,7 +123,7 @@ export function Sidebar({
                     : 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
               }`}
             >
-              {isRunningProcess && processType === 'remove' ? `Removing${dots}` : removeText}
+              {isRunningProcess && processType === 'remove' ? `移除中${dots}` : removeText}
             </button>
           </div>
 
@@ -140,7 +140,7 @@ export function Sidebar({
                     : 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
               }`}
             >
-              {isSavingConfig ? 'Saving' : configureText}
+              {isSavingConfig ? '保存中' : configureText}
             </button>
           </div>
 
@@ -157,7 +157,7 @@ export function Sidebar({
                     : 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
               }`}
             >
-              {isRunningProcess && processType === 'install' ? `Installing${dots}` : installText}
+              {isRunningProcess && processType === 'install' ? `安装中${dots}` : installText}
             </button>
           </div>
         </div>
@@ -169,7 +169,7 @@ export function Sidebar({
               onClick={handleTerminalClick}
               className={`flex w-full items-center justify-center gap-3 border-4 border-ink bg-white py-4 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
             >
-              <span>Terminal</span>
+              <span>终端</span>
               <img src={terminalIcon} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
             </button>
           </div>

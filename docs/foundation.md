@@ -29,6 +29,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Sidebar action gating keeps `Terminal` always launchable, while `Config` only enables for a single installed configurable CLI selection
 - Default native window size is `985x705`, with matching minimum size
 - Root layout must disable window-level overscroll/rubber-banding; internal panels should keep normal scrolling behavior
+- Frontend copy is Simplified Chinese first; English stays only where it is part of product/package names or a small decorative accent
 
 ## Aesthetic & UI Decisions
 
