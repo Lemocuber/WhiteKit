@@ -9,6 +9,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Target platforms: macOS and Windows
 - Current stack: Vite, React, TypeScript, Tailwind, Tauri
 - The native backend is intentionally minimal: it launches without root/admin requirements and exposes one shell execution command returning `stdout`, `stderr`, and `exitCode`
+- Catalog commands may opt into OS-native elevation with a leading `!SUDO ` marker; the backend strips the marker and lets macOS/Windows show their system permission prompt without launching the whole app as root/admin
 - Long-running shell commands must run off the Tauri app thread, and the UI must enter its processing view before install/remove execution begins
 - The processing view must stay open after a run finishes until the user explicitly acknowledges it; queued items count as settled once they either succeed or fail
 - On macOS, shell commands must run through the user's login+interactive shell so PATH-managed tools like `nvm` Node installs and npm-global CLIs are detectable from the app
@@ -18,6 +19,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Installed state is only trusted when detect command output matches the catalog version regex
 - Install queues expand missing dependencies before selected tools; uninstall never removes dependencies automatically
 - Platform package managers are first-class detect/install-only tools: macOS shows Homebrew, Windows shows Winget, and managed package installs depend on the current platform manager when missing
+- Platform package manager bootstrap commands use `!SUDO`; normal `brew install` and `winget install` package commands remain non-elevated and rely on their package manager or installer to request any further privileges
 - GitHub Actions builds macOS and Windows test artifacts on pushes to `dev`; macOS artifacts ship as a zipped unsigned `WhiteKit.app`, Windows artifacts ship as a zipped portable `whitekit.exe`
 - Tool logos live in `src/assets/tools`; the WhiteKit mark lives in `public/brand/whitekit.svg` and doubles as the favicon
 - Native desktop app icons are generated into `src-tauri/icons/` from `public/brand/whitekit-native-icon.svg`, which places the existing WhiteKit SVG on an inset macOS-style continuous-rounded white desktop icon tile with transparent outer padding; CI/native builds depend on those generated files being committed

@@ -14,6 +14,7 @@ use tauri::Emitter;
 
 const NETWORK_SAMPLE_EVENT: &str = "network-traffic-sample";
 const NETWORK_SAMPLE_INTERVAL: Duration = Duration::from_secs(1);
+const ELEVATION_PREFIX: &str = "!SUDO ";
 
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
@@ -52,9 +53,48 @@ fn shell_program_and_args(command: &str, shell_env: Option<&str>) -> (String, Ve
   ("sh".into(), vec!["-lc".into(), command.into()])
 }
 
-fn execute_shell(command: String) -> ShellResult {
-  let shell_env = env::var("SHELL").ok();
-  let (program, args) = shell_program_and_args(&command, shell_env.as_deref());
+fn elevated_shell_program_and_args(command: &str) -> (String, Vec<String>) {
+  if cfg!(target_os = "windows") {
+    let script = format!(
+      "$process = Start-Process -FilePath 'cmd.exe' -ArgumentList @('/C', {}) -Verb RunAs -Wait -PassThru -WindowStyle Hidden; exit $process.ExitCode",
+      powershell_single_quoted(command)
+    );
+
+    return (
+      "powershell".into(),
+      vec!["-NoProfile".into(), "-Command".into(), script],
+    );
+  }
+
+  if cfg!(target_os = "macos") {
+    let script = format!(
+      "do shell script {} with administrator privileges",
+      applescript_string_literal(command)
+    );
+
+    return ("osascript".into(), vec!["-e".into(), script]);
+  }
+
+  shell_program_and_args(command, None)
+}
+
+fn strip_elevation_prefix(command: &str) -> Result<Option<&str>, &'static str> {
+  match command.strip_prefix(ELEVATION_PREFIX) {
+    Some(stripped) if stripped.trim().is_empty() => Err("!SUDO command cannot be empty"),
+    Some(stripped) => Ok(Some(stripped)),
+    None => Ok(None),
+  }
+}
+
+fn applescript_string_literal(value: &str) -> String {
+  format!("\"{}\"", value.replace('\\', "\\\\").replace('"', "\\\""))
+}
+
+fn powershell_single_quoted(value: &str) -> String {
+  format!("'{}'", value.replace('\'', "''"))
+}
+
+fn execute_command(program: String, args: Vec<String>) -> ShellResult {
   let mut shell = Command::new(program);
   shell.args(args);
 
@@ -79,6 +119,23 @@ fn execute_shell(command: String) -> ShellResult {
       exit_code: -1,
     },
   }
+}
+
+fn execute_shell(command: String) -> ShellResult {
+  let shell_env = env::var("SHELL").ok();
+  let (program, args) = match strip_elevation_prefix(&command) {
+    Ok(Some(stripped)) => elevated_shell_program_and_args(stripped),
+    Ok(None) => shell_program_and_args(&command, shell_env.as_deref()),
+    Err(error) => {
+      return ShellResult {
+        stdout: String::new(),
+        stderr: error.into(),
+        exit_code: -1,
+      }
+    }
+  };
+
+  execute_command(program, args)
 }
 
 #[tauri::command]
@@ -131,7 +188,10 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-  use super::shell_program_and_args;
+  use super::{
+    applescript_string_literal, elevated_shell_program_and_args, powershell_single_quoted,
+    shell_program_and_args, strip_elevation_prefix,
+  };
 
   #[test]
   #[cfg(target_os = "macos")]
@@ -158,5 +218,63 @@ mod tests {
 
     assert_eq!(program, "cmd");
     assert_eq!(args, vec!["/C", "python --version"]);
+  }
+
+  #[test]
+  fn sudo_marker_is_stripped_only_at_command_start() {
+    assert_eq!(
+      strip_elevation_prefix("!SUDO installer -pkg app.pkg -target /"),
+      Ok(Some("installer -pkg app.pkg -target /"))
+    );
+    assert_eq!(strip_elevation_prefix("echo !SUDO"), Ok(None));
+  }
+
+  #[test]
+  fn empty_sudo_marker_is_invalid() {
+    assert_eq!(
+      strip_elevation_prefix("!SUDO    "),
+      Err("!SUDO command cannot be empty")
+    );
+  }
+
+  #[test]
+  fn string_literals_escape_platform_shells() {
+    assert_eq!(
+      applescript_string_literal(r#"echo "hi" \ done"#),
+      r#""echo \"hi\" \\ done""#
+    );
+    assert_eq!(
+      powershell_single_quoted("echo 'hi'"),
+      "'echo ''hi'''"
+    );
+  }
+
+  #[test]
+  #[cfg(target_os = "macos")]
+  fn macos_elevated_commands_use_osascript_administrator_prompt() {
+    let (program, args) = elevated_shell_program_and_args(r#"echo "hi""#);
+
+    assert_eq!(program, "osascript");
+    assert_eq!(
+      args,
+      vec![
+        "-e",
+        r#"do shell script "echo \"hi\"" with administrator privileges"#
+      ]
+    );
+  }
+
+  #[test]
+  #[cfg(target_os = "windows")]
+  fn windows_elevated_commands_use_uac_runas() {
+    let (program, args) = elevated_shell_program_and_args("winget install Git.Git");
+
+    assert_eq!(program, "powershell");
+    assert_eq!(args[0], "-NoProfile");
+    assert_eq!(args[1], "-Command");
+    assert!(args[2].contains("Start-Process"));
+    assert!(args[2].contains("-Verb RunAs"));
+    assert!(args[2].contains("-WindowStyle Hidden"));
+    assert!(args[2].contains("'winget install Git.Git'"));
   }
 }

@@ -60,6 +60,19 @@ test('expandInstallQueue adds the current platform package manager before manage
   assert.deepEqual(expandInstallQueue(['git'], windowsStates, windowsCatalog), ['winget', 'git'])
 })
 
+test('catalog marks platform package manager bootstraps with the sudo sentinel', () => {
+  const homebrew = byId.get('homebrew')!
+  const winget = createToolCatalog('windows').find((tool) => tool.id === 'winget')!
+  const nodejs = byId.get('nodejs')!
+
+  assert.equal(homebrew.install.startsWith('!SUDO '), true)
+  assert.equal(homebrew.detect.startsWith('!SUDO '), false)
+  assert.equal(winget.install.startsWith('!SUDO '), true)
+  assert.equal(winget.detect.startsWith('!SUDO '), false)
+  assert.equal(nodejs.install.startsWith('!SUDO '), false)
+  assert.equal(nodejs.uninstall.startsWith('!SUDO '), false)
+})
+
 test('detectTool marks tools installed only when command output matches the version regex', async () => {
   const result = await detectTool(byId.get('nodejs')!, async () => shellResult('v20.11.0', '', 0))
 

@@ -53,7 +53,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
       macos: 'brew --version',
     },
     install: {
-      macos: 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"',
+      macos: '!SUDO /usr/bin/curl -fsSL -o /tmp/whitekit-homebrew.pkg https://github.com/Homebrew/brew/releases/latest/download/Homebrew.pkg && /usr/sbin/installer -pkg /tmp/whitekit-homebrew.pkg -target /',
     },
     uninstall: {
       macos: '',
@@ -70,7 +70,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
       windows: 'winget --version',
     },
     install: {
-      windows: 'powershell -NoProfile -Command "Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe"',
+      windows: '!SUDO powershell -NoProfile -Command "Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller_8wekyb3d8bbwe"',
     },
     uninstall: {
       windows: '',
