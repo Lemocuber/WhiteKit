@@ -28,10 +28,10 @@ npm run tauri:build
 
 ## CI Builds
 
-Pushing to `dev` runs `.github/workflows/build.yml`, which builds macOS and Windows Tauri artifacts and keeps them on the workflow run for 14 days.
+Pushing to `zh` runs `.github/workflows/build.yml`, which builds macOS and Windows Tauri artifacts without the npm test step. The `dev` branch keeps its own `dev`-only trigger and test-enabled build.
 
-- macOS: zipped `WhiteKit.app` for unsigned internal testing
-- Windows: zipped portable `whitekit.exe`
+- macOS: `whitekit-macos-zh.zip` with unsigned `WhiteKit.app`
+- Windows: `whitekit-windows-zh.zip` with portable `whitekit.exe`
 
 Regenerate native icons after brand icon changes with:
 
