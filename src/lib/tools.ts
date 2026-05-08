@@ -8,9 +8,14 @@ import openclawIcon from '@/assets/tools/openclaw.svg'
 import pythonIcon from '@/assets/tools/python.svg'
 import wingetIcon from '@/assets/tools/winget.svg'
 import { createToolCatalog, type ToolCatalogEntry, type ToolId, type ToolStatus } from '@/lib/toolCatalog'
+import {
+  getFilteredTools,
+  getNextToolFilter,
+  isToolInstalled,
+} from '@/lib/toolFilters'
 
 export type { ToolId, ToolStatus } from '@/lib/toolCatalog'
-export type ToolFilter = 'all' | 'installed' | 'available'
+export type { ToolFilter } from '@/lib/toolFilters'
 
 interface ToolDefinition extends ToolCatalogEntry {
   iconSrc: string
@@ -21,12 +26,6 @@ interface ToolDefinition extends ToolCatalogEntry {
 export interface Tool extends ToolDefinition {
   selected: boolean
 }
-
-export const toolFilterTabs: Array<{ id: ToolFilter; label: string }> = [
-  { id: 'all', label: 'All Tools' },
-  { id: 'installed', label: 'Installed' },
-  { id: 'available', label: 'Available' },
-]
 
 const toolIcons: Record<ToolId, string> = {
   homebrew: homebrewIcon,
@@ -50,27 +49,12 @@ export function createInitialTools(): Tool[] {
   }))
 }
 
-export function isToolInstalled(tool: Tool): boolean {
-  return tool.status === 'installed'
-}
-
 export function toggleToolSelection(tools: Tool[], id: ToolId): Tool[] {
   return tools.map((tool) => (
     tool.id === id ? { ...tool, selected: !tool.selected } : tool
   ))
 }
-
-export function getFilteredTools(tools: Tool[], filter: ToolFilter): Tool[] {
-  if (filter === 'installed') {
-    return tools.filter(isToolInstalled)
-  }
-
-  if (filter === 'available') {
-    return tools.filter((tool) => !isToolInstalled(tool))
-  }
-
-  return tools
-}
+export { getFilteredTools, getNextToolFilter, isToolInstalled }
 
 export function getToolSelectionState(tools: Tool[]) {
   const selectedTools = tools.filter((tool) => tool.selected)

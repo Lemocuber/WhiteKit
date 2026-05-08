@@ -1,7 +1,7 @@
 import { brandIconSrc, buttonInteractiveClasses, cardInteractiveClasses, hoverHitboxClasses, surfacePressedClasses } from '@/app/ui'
 import {
+  getNextToolFilter,
   isToolInstalled,
-  toolFilterTabs,
   type Tool,
   type ToolFilter,
   type ToolId,
@@ -20,11 +20,26 @@ export function ToolGrid({
   onToolToggle,
   tools,
 }: ToolGridProps) {
+  const headerFilter = getHeaderFilterPresentation(activeFilter)
+
   return (
     <>
       <header className="flex items-center gap-4 pl-2">
-        <div className="flex h-16 w-16 items-center justify-center border-4 border-ink bg-accent-lime p-2 shadow-brutal">
-          <img src={brandIconSrc} alt="WhiteKit" className="h-full w-full object-contain" />
+        <div className={hoverHitboxClasses}>
+          <button
+            type="button"
+            onClick={() => onFilterChange(getNextToolFilter(activeFilter))}
+            aria-label={headerFilter.ariaLabel}
+            title={headerFilter.title}
+            className={`flex h-16 w-16 cursor-pointer items-center justify-center border-4 border-ink p-2 shadow-brutal ${headerFilter.classes} ${buttonInteractiveClasses}`}
+          >
+            <img
+              src={brandIconSrc}
+              alt=""
+              aria-hidden="true"
+              className={`h-full w-full object-contain ${headerFilter.iconClasses}`}
+            />
+          </button>
         </div>
         <div>
           <h1 className="text-5xl font-black uppercase tracking-tight leading-none">WhiteKit</h1>
@@ -34,32 +49,9 @@ export function ToolGrid({
         </div>
       </header>
 
-      <div className="mt-8 flex gap-4 border-b-4 border-ink pb-4 pl-2">
-        {toolFilterTabs.map((tab) => {
-          const isActive = tab.id === activeFilter
-
-          return (
-            <div key={tab.id} className={hoverHitboxClasses}>
-              <button
-                type="button"
-                onClick={() => onFilterChange(tab.id)}
-                aria-pressed={isActive}
-                className={`border-2 border-ink px-4 py-2 text-sm font-black uppercase ${
-                  isActive
-                    ? `bg-ink text-canvas ${surfacePressedClasses}`
-                    : `cursor-pointer bg-white text-ink shadow-brutal ${buttonInteractiveClasses}`
-                }`}
-              >
-                {tab.label}
-              </button>
-            </div>
-          )
-        })}
-      </div>
-
       <div className="min-h-0 flex-1">
-        <div className="h-full overflow-y-auto px-2">
-          <div className="flex flex-wrap content-start gap-6 pt-6 pb-8">
+        <div className="h-full overflow-y-auto border-t-4 border-ink px-2 pt-6">
+          <div className="flex flex-wrap content-start gap-6 pb-8">
             {tools.map((tool) => {
               const badge = getStatusBadge(tool)
 
@@ -122,6 +114,33 @@ export function ToolGrid({
       </div>
     </>
   )
+}
+
+function getHeaderFilterPresentation(filter: ToolFilter) {
+  if (filter === 'installed') {
+    return {
+      classes: 'bg-accent-lime text-ink',
+      iconClasses: '',
+      ariaLabel: 'Tool filter: installed. Click to show available tools.',
+      title: 'Installed tools',
+    }
+  }
+
+  if (filter === 'available') {
+    return {
+      classes: 'bg-accent-magenta text-white',
+      iconClasses: 'brightness-0 invert',
+      ariaLabel: 'Tool filter: available. Click to show all tools.',
+      title: 'Available tools',
+    }
+  }
+
+  return {
+    classes: 'bg-white text-ink',
+    iconClasses: '',
+    ariaLabel: 'Tool filter: all. Click to show installed tools.',
+    title: 'All tools',
+  }
 }
 
 function getStatusBadge(tool: Tool) {
