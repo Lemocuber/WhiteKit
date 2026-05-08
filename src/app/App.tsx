@@ -6,10 +6,12 @@ import { Sidebar } from '@/app/components/Sidebar'
 import { ToolGrid } from '@/app/components/ToolGrid'
 import { useToolConfigManager } from '@/app/hooks/useToolConfigManager'
 import { useToolProcessManager } from '@/app/hooks/useToolProcessManager'
+import { useWindowResizeInvalidation } from '@/app/hooks/useWindowResizeInvalidation'
 import { getFilteredTools, isToolInstalled, type ToolFilter } from '@/lib/tools'
 import type { ToolConfigTarget } from '@/lib/toolConfig'
 
 function App() {
+  const viewportStyle = useWindowResizeInvalidation()
   const [activeFilter, setActiveFilter] = useState<ToolFilter>('all')
   const {
     tools,
@@ -52,7 +54,10 @@ function App() {
   const canConfigure = Boolean(selectedConfigTarget) && !isProcessViewOpen && !isConfigViewOpen
 
   return (
-    <main className="h-screen bg-canvas text-ink font-sans flex border-ink overflow-hidden select-none">
+    <main
+      style={viewportStyle}
+      className="bg-canvas text-ink font-sans flex border-ink overflow-hidden select-none"
+    >
       <section className="w-[80%] min-h-0 p-8 flex flex-col overflow-hidden border-r-4 border-ink relative">
         {isConfigViewOpen && configTarget ? (
           <ConfigView
