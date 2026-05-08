@@ -44,9 +44,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html,
 body {
   margin: 0;
-  min-height: 100vh;
+  height: 100%;
+  overscroll-behavior: none;
+  overflow: hidden;
 }
 
 * {
@@ -55,7 +58,9 @@ body {
 }
 
 #root {
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 .top-dash-separator {

@@ -28,6 +28,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - App shell lives in `src/app/App.tsx`; real process lifecycle and telemetry live in `src/app/hooks`, and the main screen sections live in `src/app/components`
 - Sidebar action gating keeps `Terminal` always launchable, while `Config` only enables for a single installed configurable CLI selection
 - Default native window size is `980x700`, with matching minimum size
+- Root layout must disable window-level overscroll/rubber-banding; internal panels should keep normal scrolling behavior
 
 ## Aesthetic & UI Decisions
 
