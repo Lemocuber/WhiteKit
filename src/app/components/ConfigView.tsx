@@ -51,7 +51,7 @@ export function ConfigView({
     <div className="z-10 flex h-full flex-col">
       <header className="mb-8 flex items-end justify-between gap-6">
         <h2 className="text-5xl font-black uppercase leading-none tracking-tight">
-          Configure {toolName}
+          Configure {toolName.split(' ')[0]}
         </h2>
       </header>
 
@@ -90,7 +90,7 @@ export function ConfigView({
               </label>
 
               <label className="flex flex-col gap-2">
-                <span className="font-mono text-xs font-black uppercase tracking-widest">Model</span>
+                <span className="font-mono text-xs font-black uppercase tracking-widest">Model (Optional)</span>
                 <input
                   type="text"
                   value={model}
@@ -133,7 +133,7 @@ export function ConfigView({
                 </div>
               )}
 
-              <div className="flex flex-wrap justify-center gap-4 pt-2">
+              <div className="flex flex-wrap justify-center gap-4 pt-4">
                 {configError ? (
                   <div className={hoverHitboxClasses}>
                     <button

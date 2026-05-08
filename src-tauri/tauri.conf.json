@@ -13,10 +13,10 @@
     "windows": [
       {
         "title": "WhiteKit",
-        "width": 980,
-        "height": 700,
-        "minWidth": 980,
-        "minHeight": 700
+        "width": 985,
+        "height": 705,
+        "minWidth": 985,
+        "minHeight": 705
       }
     ],
     "security": {

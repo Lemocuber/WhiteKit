@@ -42,9 +42,9 @@ export function ToolGrid({
           </button>
         </div>
         <div>
-          <h1 className="text-[4.5rem] leading-[0.9] font-black uppercase tracking-tight">WhiteKit</h1>
+          <h1 className="text-6xl leading-[0.9] font-black uppercase tracking-tight">WhiteKit</h1>
           <p className="mt-2 inline-block bg-ink px-2 py-0.5 font-mono text-xs font-bold text-canvas">
-            CONTROL_SURFACE // RESIDENCY_THEME
+            Dev Env Setup // Coldstart Toolkit
           </p>
         </div>
       </header>
@@ -60,7 +60,7 @@ export function ToolGrid({
                   <button
                     type="button"
                     onClick={() => onToolToggle(tool.id)}
-                    className={`relative flex min-h-[190px] w-[280px] cursor-pointer flex-col overflow-hidden border-4 border-ink p-5 pb-16 text-left ${
+                    className={`relative flex min-h-[190px] w-[280px] cursor-pointer flex-col overflow-hidden border-4 border-ink px-5 pt-4 pb-14 text-left ${
                       tool.selected
                         ? `bg-accent-lime ${surfacePressedClasses}`
                         : `bg-white shadow-brutal ${cardInteractiveClasses}`
@@ -85,7 +85,7 @@ export function ToolGrid({
                       </div>
                     </div>
 
-                    <p className="relative z-10 mt-4 h-8 overflow-hidden text-xs font-medium leading-tight opacity-90 line-clamp-2">
+                    <p className="relative z-10 mt-1 h-8 overflow-hidden text-xs font-medium leading-tight opacity-90 line-clamp-2">
                       {tool.description}
                     </p>
 
