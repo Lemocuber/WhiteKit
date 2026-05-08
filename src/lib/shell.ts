@@ -9,8 +9,8 @@ export async function runShell(command: string): Promise<ShellResult> {
 
 export async function launchTerminal(): Promise<void> {
   const command = detectToolPlatform() === 'windows'
-    ? 'start cmd'
-    : `osascript -e 'tell application "Terminal" to do script ""'`
+    ? '!SUDO start cmd'
+    : `!SUDO osascript -e 'tell application "Terminal" to do script ""'`
   const result = await runShell(command)
 
   if (result.exitCode !== 0) {
