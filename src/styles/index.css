@@ -55,12 +55,28 @@ body {
 * {
   box-sizing: border-box;
   border-color: var(--color-ink);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink) transparent;
 }
 
 #root {
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--color-ink);
+  border-radius: 0;
 }
 
 .top-dash-separator {
