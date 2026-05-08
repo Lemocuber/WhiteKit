@@ -1,7 +1,4 @@
-import configIcon from '@/assets/ui/config.svg?raw'
-import installIcon from '@/assets/ui/install.svg?raw'
-import removeIcon from '@/assets/ui/remove.svg?raw'
-import terminalIcon from '@/assets/ui/terminal.svg?raw'
+import terminalIcon from '@/assets/tools/terminal.svg'
 import { useNetworkTelemetry } from '@/app/hooks/useNetworkTelemetry'
 import type { ProcessType } from '@/app/hooks/useToolProcessManager'
 import { buttonInteractiveClasses, hoverHitboxClasses } from '@/app/ui'
@@ -22,23 +19,6 @@ interface SidebarProps {
   processType: ProcessType | null
   removeText: string
   startProcess: (type: ProcessType) => void
-}
-
-const actionIcons = {
-  config: configIcon,
-  install: installIcon,
-  remove: removeIcon,
-  terminal: terminalIcon,
-} as const
-
-function ActionIcon({ name }: { name: keyof typeof actionIcons }) {
-  const markup = actionIcons[name]
-    .replace('<svg ', '<svg aria-hidden="true" class="h-5 w-5 shrink-0 fill-current" ')
-    .replace(/fill="[^"]*"/g, 'fill="currentColor"')
-
-  return (
-    <span aria-hidden="true" className="shrink-0 leading-none" dangerouslySetInnerHTML={{ __html: markup }} />
-  )
 }
 
 export function Sidebar({
@@ -135,7 +115,7 @@ export function Sidebar({
               type="button"
               onClick={() => startProcess('remove')}
               disabled={!canUninstall || isActionLocked}
-              className={`flex w-full items-center justify-center gap-3 border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
+              className={`w-full border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
                 canUninstall && !isActionLocked
                   ? `bg-accent-magenta text-white shadow-brutal ${buttonInteractiveClasses}`
                   : isProcessViewOpen && processType === 'remove'
@@ -143,8 +123,7 @@ export function Sidebar({
                     : 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
               }`}
             >
-              <span>{isRunningProcess && processType === 'remove' ? `Removing${dots}` : removeText}</span>
-              <ActionIcon name="remove" />
+              {isRunningProcess && processType === 'remove' ? `Removing${dots}` : removeText}
             </button>
           </div>
 
@@ -153,7 +132,7 @@ export function Sidebar({
               type="button"
               onClick={onConfigure}
               disabled={!canConfigure || isActionLocked}
-              className={`flex w-full items-center justify-center gap-3 border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
+              className={`w-full border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
                 canConfigure && !isActionLocked
                   ? `bg-accent-blue text-white shadow-brutal ${buttonInteractiveClasses}`
                   : isConfigViewOpen
@@ -161,8 +140,7 @@ export function Sidebar({
                     : 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
               }`}
             >
-              <span>{isSavingConfig ? 'Saving' : configureText}</span>
-              <ActionIcon name="config" />
+              {isSavingConfig ? 'Saving' : configureText}
             </button>
           </div>
 
@@ -171,7 +149,7 @@ export function Sidebar({
               type="button"
               onClick={() => startProcess('install')}
               disabled={!canInstall || isActionLocked}
-              className={`flex w-full items-center justify-center gap-3 border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
+              className={`w-full border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
                 canInstall && !isActionLocked
                   ? `bg-accent-lime shadow-brutal ${buttonInteractiveClasses}`
                   : isProcessViewOpen && processType === 'install'
@@ -179,8 +157,7 @@ export function Sidebar({
                     : 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
               }`}
             >
-              <span>{isRunningProcess && processType === 'install' ? `Installing${dots}` : installText}</span>
-              <ActionIcon name="install" />
+              {isRunningProcess && processType === 'install' ? `Installing${dots}` : installText}
             </button>
           </div>
         </div>
@@ -193,7 +170,7 @@ export function Sidebar({
               className={`flex w-full items-center justify-center gap-3 border-4 border-ink bg-white py-4 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
             >
               <span>Terminal</span>
-              <ActionIcon name="terminal" />
+              <img src={terminalIcon} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
             </button>
           </div>
         </div>

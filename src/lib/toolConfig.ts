@@ -250,27 +250,19 @@ export async function loadToolConfig(
   const paths = getToolConfigPaths(target, platform)
 
   if (target === 'codex') {
-    try {
-      const authJson = await readConfigFile(paths.authJson!, runShell, platform)
-      const configToml = await readConfigFile(paths.configToml!, runShell, platform)
+    const authJson = await readConfigFile(paths.authJson!, runShell, platform)
+    const configToml = await readConfigFile(paths.configToml!, runShell, platform)
 
-      return {
-        baseUrl: readCodexConfigTomlValue(configToml, codexProviderSection, 'base_url'),
-        apiKey: readCodexAuthJsonApiKey(authJson),
-        model: readCodexRootModel(configToml),
-      }
-    } catch {
-      return emptyToolConfigInput()
+    return {
+      baseUrl: readCodexConfigTomlValue(configToml, codexProviderSection, 'base_url'),
+      apiKey: readCodexAuthJsonApiKey(authJson),
+      model: readCodexRootModel(configToml),
     }
   }
 
-  try {
-    const settingsJson = await readConfigFile(paths.settingsJson!, runShell, platform)
+  const settingsJson = await readConfigFile(paths.settingsJson!, runShell, platform)
 
-    return readClaudeSettingsJson(settingsJson)
-  } catch {
-    return emptyToolConfigInput()
-  }
+  return readClaudeSettingsJson(settingsJson)
 }
 
 export async function saveToolConfig(
@@ -285,24 +277,17 @@ export async function saveToolConfig(
 
   await runChecked(makeDirCommand(paths.dir, platform), runShell, 'Failed to create config directory')
 
-  let writes: ToolConfigWrite[]
-
-  try {
-    const existing = target === 'codex'
-      ? {
-        authJson: await readConfigFile(paths.authJson!, runShell, platform),
-        configToml: await readConfigFile(paths.configToml!, runShell, platform),
-        platform,
-      }
-      : {
-        settingsJson: await readConfigFile(paths.settingsJson!, runShell, platform),
-        platform,
-      }
-
-    writes = buildToolConfigWrites(target, input, existing)
-  } catch {
-    writes = buildToolConfigWrites(target, input, { platform })
-  }
+  const existing = target === 'codex'
+    ? {
+      authJson: await readConfigFile(paths.authJson!, runShell, platform),
+      configToml: await readConfigFile(paths.configToml!, runShell, platform),
+      platform,
+    }
+    : {
+      settingsJson: await readConfigFile(paths.settingsJson!, runShell, platform),
+      platform,
+    }
+  const writes = buildToolConfigWrites(target, input, existing)
 
   for (const write of writes) {
     await runChecked(writeFileCommand(write.path, write.content, platform), runShell, `Failed to write ${write.path}`)
@@ -443,22 +428,9 @@ function readTomlKeyValue(lines: string[], key: string): string {
 
 function parseTomlString(value: string): string {
   if (!value) return ''
-  const startsDouble = value.startsWith('"')
-  const endsDouble = value.endsWith('"')
-  const startsSingle = value.startsWith("'")
-  const endsSingle = value.endsWith("'")
-
-  if ((startsDouble || endsDouble) && !(startsDouble && endsDouble)) {
-    throw new ToolConfigError('Codex config.toml contains an invalid string value')
-  }
-
-  if ((startsSingle || endsSingle) && !(startsSingle && endsSingle)) {
-    throw new ToolConfigError('Codex config.toml contains an invalid string value')
-  }
-
-  if ((startsDouble && endsDouble) || (startsSingle && endsSingle)) {
+  if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
     try {
-      return startsDouble ? JSON.parse(value) : value.slice(1, -1)
+      return value.startsWith('"') ? JSON.parse(value) : value.slice(1, -1)
     } catch {
       throw new ToolConfigError('Codex config.toml contains an invalid string value')
     }

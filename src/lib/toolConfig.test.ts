@@ -225,129 +225,70 @@ test('loadToolConfig reads existing Claude values from settings JSON', async () 
   })
 })
 
-test('loadToolConfig leaves missing stored fields blank', async () => {
+test('loadToolConfig rejects invalid stored Codex and Claude config', async () => {
   const codexPaths = getToolConfigPaths('codex', 'macos')
   const claudePaths = getToolConfigPaths('claude', 'macos')
 
-  assert.deepEqual(await loadToolConfig('codex', async (command) => {
-    if (command === readFileCommand(codexPaths.authJson!, 'macos')) {
-      return shellResult(JSON.stringify({ auth_mode: 'apikey' }), '', 0)
-    }
-    if (command === readFileCommand(codexPaths.configToml!, 'macos')) {
-      return shellResult(`model_provider = "whitekit"
+  await assert.rejects(
+    () => loadToolConfig('codex', async (command) => {
+      if (command === readFileCommand(codexPaths.authJson!, 'macos')) return shellResult('[]', '', 0)
+      if (command === readFileCommand(codexPaths.configToml!, 'macos')) return shellResult('', '', 0)
 
-[model_providers.whitekit]
-name = "whitekit"
-`, '', 0)
-    }
+      assert.fail(`Unexpected command: ${command}`)
+    }, 'macos'),
+    /Codex auth\.json must contain a JSON object/,
+  )
 
-    assert.fail(`Unexpected command: ${command}`)
-  }, 'macos'), {
-    baseUrl: '',
-    apiKey: '',
-    model: '',
-  })
+  await assert.rejects(
+    () => loadToolConfig('claude', async (command) => {
+      if (command === readFileCommand(claudePaths.settingsJson!, 'macos')) {
+        return shellResult(JSON.stringify({ env: [] }), '', 0)
+      }
 
-  assert.deepEqual(await loadToolConfig('claude', async (command) => {
-    if (command === readFileCommand(claudePaths.settingsJson!, 'macos')) {
-      return shellResult(JSON.stringify({
-        env: {
-          KEEP_ME: 'yes',
-        },
-      }), '', 0)
-    }
-
-    assert.fail(`Unexpected command: ${command}`)
-  }, 'macos'), {
-    baseUrl: '',
-    apiKey: '',
-    model: '',
-  })
+      assert.fail(`Unexpected command: ${command}`)
+    }, 'macos'),
+    /Claude settings\.json env must be an object/,
+  )
 })
 
-test('loadToolConfig ignores malformed stored config', async () => {
+test('invalid JSON and invalid env fail before writing', async () => {
+  assert.throws(
+    () => buildToolConfigWrites('codex', input, { platform: 'macos', authJson: '[]' }),
+    /Codex auth\.json must contain a JSON object/,
+  )
+
   const codexPaths = getToolConfigPaths('codex', 'macos')
-  const claudePaths = getToolConfigPaths('claude', 'macos')
+  const codexWriteCommands: string[] = []
 
-  assert.deepEqual(await loadToolConfig('codex', async (command) => {
-    if (command === readFileCommand(codexPaths.authJson!, 'macos')) {
-      return shellResult('{bad json', '', 0)
-    }
-    if (command === readFileCommand(codexPaths.configToml!, 'macos')) {
-      return shellResult(`model = "gpt-5.5"
+  await assert.rejects(
+    () => saveToolConfig('codex', input, async (command) => {
+      if (command === makeDirCommand(codexPaths.dir, 'macos')) return shellResult('', '', 0)
+      if (command === readFileCommand(codexPaths.authJson!, 'macos')) return shellResult('{bad json', '', 0)
+      if (command === readFileCommand(codexPaths.configToml!, 'macos')) return shellResult('', '', 0)
 
-[model_providers.whitekit]
-base_url = "https://llm.whitekit.test/v1"
-`, '', 0)
-    }
-
-    assert.fail(`Unexpected command: ${command}`)
-  }, 'macos'), {
-    apiKey: '',
-    baseUrl: '',
-    model: '',
-  })
-
-  assert.deepEqual(await loadToolConfig('claude', async (command) => {
-    if (command === readFileCommand(claudePaths.settingsJson!, 'macos')) {
-      return shellResult(JSON.stringify({ env: [] }), '', 0)
-    }
-
-    assert.fail(`Unexpected command: ${command}`)
-  }, 'macos'), {
-    baseUrl: '',
-    apiKey: '',
-    model: '',
-  })
-})
-
-test('saveToolConfig falls back to fresh files when existing config is malformed', async () => {
-  const codexPaths = getToolConfigPaths('codex', 'macos')
-  const codexCommands: string[] = []
-
-  await saveToolConfig('codex', input, async (command) => {
-    codexCommands.push(command)
-    if (command === makeDirCommand(codexPaths.dir, 'macos')) return shellResult('', '', 0)
-    if (command === readFileCommand(codexPaths.authJson!, 'macos')) return shellResult('{bad json', '', 0)
-    if (command === readFileCommand(codexPaths.configToml!, 'macos')) return shellResult('', '', 0)
-
-    return shellResult('', '', 0)
-  }, 'macos')
-  assert.ok(codexCommands.includes(writeFileCommand(codexPaths.authJson!, `{
-  "OPENAI_API_KEY": "sk-whitekit",
-  "auth_mode": "apikey"
-}
-`, 'macos')))
-  assert.ok(codexCommands.includes(writeFileCommand(codexPaths.configToml!, `model = "gpt-5.5"
-model_provider = "whitekit"
-
-[model_providers.whitekit]
-name = "whitekit"
-base_url = "https://llm.whitekit.test/v1"
-wire_api = "responses"
-requires_openai_auth = true
-`, 'macos')))
+      codexWriteCommands.push(command)
+      return shellResult('', '', 0)
+    }, 'macos'),
+    /Codex auth\.json must contain a JSON object/,
+  )
+  assert.deepEqual(codexWriteCommands, [])
 
   const claudePaths = getToolConfigPaths('claude', 'macos')
-  const claudeCommands: string[] = []
+  const claudeWriteCommands: string[] = []
 
-  await saveToolConfig('claude', input, async (command) => {
-    claudeCommands.push(command)
-    if (command === makeDirCommand(claudePaths.dir, 'macos')) return shellResult('', '', 0)
-    if (command === readFileCommand(claudePaths.settingsJson!, 'macos')) {
-      return shellResult(JSON.stringify({ env: [] }), '', 0)
-    }
+  await assert.rejects(
+    () => saveToolConfig('claude', input, async (command) => {
+      if (command === makeDirCommand(claudePaths.dir, 'macos')) return shellResult('', '', 0)
+      if (command === readFileCommand(claudePaths.settingsJson!, 'macos')) {
+        return shellResult(JSON.stringify({ env: [] }), '', 0)
+      }
 
-    return shellResult('', '', 0)
-  }, 'macos')
-  assert.ok(claudeCommands.includes(writeFileCommand(claudePaths.settingsJson!, `{
-  "env": {
-    "ANTHROPIC_AUTH_TOKEN": "sk-whitekit",
-    "ANTHROPIC_BASE_URL": "https://llm.whitekit.test/v1"
-  },
-  "model": "gpt-5.5"
-}
-`, 'macos')))
+      claudeWriteCommands.push(command)
+      return shellResult('', '', 0)
+    }, 'macos'),
+    /Claude settings\.json env must be an object/,
+  )
+  assert.deepEqual(claudeWriteCommands, [])
 })
 
 test('windows file commands use encoded PowerShell to survive cmd shell quoting', () => {
