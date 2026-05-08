@@ -8,7 +8,7 @@ const HISTORY_LENGTH = 22
 const GRAPH_MAX_BYTES_PER_SECOND = 10_000_000
 const GRAPH_CURVE_EXPONENT = 0.35
 const GRAPH_STEP = 5
-const GRAPH_BASELINE_Y = 98.5
+const GRAPH_BASELINE_Y = 97
 const NETWORK_SAMPLE_EVENT = 'network-traffic-sample'
 
 interface NetworkTrafficSample {

@@ -89,7 +89,7 @@ function App() {
         canInstall={canInstall}
         canUninstall={canUninstall}
         canConfigure={canConfigure}
-        configureText="Configure"
+        configureText="Config"
         dots={dots}
         installText={installText}
         isConfigViewOpen={isConfigViewOpen}

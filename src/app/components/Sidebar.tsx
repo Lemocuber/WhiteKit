@@ -61,9 +61,6 @@ export function Sidebar({
   return (
     <aside className="w-[20%] min-w-[300px] border-l-4 border-ink bg-white p-8 flex flex-col gap-8">
       <div>
-        <h2 className="mb-4 border-b-4 border-ink pb-2 text-xs font-mono font-black uppercase tracking-widest italic">
-          Network_Link
-        </h2>
         <div
           className={`flex min-h-[68px] items-center gap-4 border-4 border-ink px-4 py-3 shadow-brutal ${networkPanelClasses}`}
         >
@@ -87,10 +84,10 @@ export function Sidebar({
               </p>
             </div>
           ) : (
-            <div className="flex min-h-[128px] flex-col gap-2 border-4 border-ink bg-white p-3 shadow-brutal">
+            <div className="flex min-h-[128px] flex-col border-4 border-ink bg-white p-3 shadow-brutal">
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs font-black uppercase tracking-widest">Speed</span>
-                <span className="font-mono font-black">
+                <span className="text-md font-black uppercase tracking-widest">Speed</span>
+                <span className="text-md font-mono font-black">
                   {networkState === 'online' ? currentSpeedLabel : '...'}
                 </span>
               </div>

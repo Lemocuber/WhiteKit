@@ -57,7 +57,7 @@ export function ConfigView({
 
       <div className="relative min-h-0 flex-1 overflow-y-auto border-4 border-ink bg-white p-6 shadow-brutal">
         <div className="absolute top-0 right-0 z-10">
-          <div className="flex min-h-[32px] items-center border-b-4 border-l-4 border-ink bg-accent-lime px-2.5 py-1 text-xs font-mono font-black uppercase tracking-widest text-ink">
+          <div className="flex min-h-[32px] items-center border-b-4 border-l-4 border-ink bg-accent-blue px-2.5 py-1 text-xs font-mono font-black uppercase tracking-widest text-white">
             {target}_PROFILE
           </div>
         </div>
@@ -139,7 +139,7 @@ export function ConfigView({
                     <button
                       type="button"
                       onClick={onDismissError}
-                      className={`min-w-[180px] border-4 border-ink bg-accent-lime px-10 py-4 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
+                      className={`min-w-[180px] border-4 border-ink bg-accent-lime px-10 py-4 mb-12 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
                     >
                       Okay
                     </button>
