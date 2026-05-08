@@ -30,6 +30,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Default native window size is `985x705`, with matching minimum size
 - Root layout must disable window-level overscroll/rubber-banding; internal panels should keep normal scrolling behavior
 - Frontend copy is Simplified Chinese first; English stays only where it is part of product/package names or a small decorative accent
+- Root layout treats browser and Tauri resize/focus/scale events as invalidation signals, then rereads the browser viewport so macOS WebView resize and fullscreen transitions force a layout recalculation after native state settles
 
 ## Aesthetic & UI Decisions
 
