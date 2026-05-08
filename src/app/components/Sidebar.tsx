@@ -51,8 +51,6 @@ export function Sidebar({
   const isActionLocked = isProcessViewOpen || isConfigViewOpen || isSavingConfig
 
   const handleTerminalClick = () => {
-    if (isActionLocked) return
-
     void launchTerminal().catch((error) => {
       console.error('Failed to launch terminal', error)
     })
@@ -169,12 +167,7 @@ export function Sidebar({
             <button
               type="button"
               onClick={handleTerminalClick}
-              disabled={isActionLocked}
-              className={`flex w-full items-center justify-center gap-3 border-4 border-ink py-4 text-lg font-black uppercase tracking-widest ${
-                isActionLocked
-                  ? 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
-                  : `bg-white shadow-brutal ${buttonInteractiveClasses}`
-              }`}
+              className={`flex w-full items-center justify-center gap-3 border-4 border-ink bg-white py-4 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
             >
               <span>Terminal</span>
               <img src={terminalIcon} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />

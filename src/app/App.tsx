@@ -6,7 +6,7 @@ import { Sidebar } from '@/app/components/Sidebar'
 import { ToolGrid } from '@/app/components/ToolGrid'
 import { useToolConfigManager } from '@/app/hooks/useToolConfigManager'
 import { useToolProcessManager } from '@/app/hooks/useToolProcessManager'
-import { getFilteredTools, type ToolFilter } from '@/lib/tools'
+import { getFilteredTools, isToolInstalled, type ToolFilter } from '@/lib/tools'
 import type { ToolConfigTarget } from '@/lib/toolConfig'
 
 function App() {
@@ -44,7 +44,9 @@ function App() {
   } = useToolConfigManager()
   const filteredTools = getFilteredTools(tools, activeFilter)
   const selectedTools = tools.filter((tool) => tool.selected)
-  const selectedConfigTarget = selectedTools.length === 1 && isConfigurableTool(selectedTools[0].id)
+  const selectedConfigTarget = selectedTools.length === 1
+    && isToolInstalled(selectedTools[0])
+    && isConfigurableTool(selectedTools[0].id)
     ? selectedTools[0].id
     : null
   const canConfigure = Boolean(selectedConfigTarget) && !isProcessViewOpen && !isConfigViewOpen
