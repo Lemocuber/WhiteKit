@@ -37,8 +37,8 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
   - Ink/Borders: Pure Black (`#000000`)
   - Accents: Lime Green (`#ccff00`) and Magenta (`#ff00ff`)
 - **Typography**: 
-  - UI/Headings: `Geist Sans`
-  - Technical Data/Telemetry: `Geist Mono`
+  - UI/Headings: bundled local `Geist Sans` variable font from `src/assets/fonts/Geist-VariableFont_wght.ttf`
+  - Technical Data/Telemetry: bundled local `Geist Mono` variable font from `src/assets/fonts/GeistMono-VariableFont_wght.ttf`
 - **Layout**: 
   - Fixed 75/25 split (Main Experience / Action Panel) that does NOT collapse on small screens, preserving a dense desktop utility feel.
   - Main area uses a flex grid with cards fixed at `280px` minimum width, allowing flexbox to manage the grid dynamically.
