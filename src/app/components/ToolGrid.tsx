@@ -24,14 +24,14 @@ export function ToolGrid({
 
   return (
     <>
-      <header className="flex items-center gap-4 pl-2">
+      <header className="mb-6 flex items-center gap-5 pl-2">
         <div className={hoverHitboxClasses}>
           <button
             type="button"
             onClick={() => onFilterChange(getNextToolFilter(activeFilter))}
             aria-label={headerFilter.ariaLabel}
             title={headerFilter.title}
-            className={`flex h-16 w-16 cursor-pointer items-center justify-center border-4 border-ink p-2 shadow-brutal ${headerFilter.classes} ${buttonInteractiveClasses}`}
+            className={`flex h-20 w-20 cursor-pointer items-center justify-center border-4 border-ink p-2.5 shadow-brutal ${headerFilter.classes} ${buttonInteractiveClasses}`}
           >
             <img
               src={brandIconSrc}
@@ -42,7 +42,7 @@ export function ToolGrid({
           </button>
         </div>
         <div>
-          <h1 className="text-5xl font-black uppercase tracking-tight leading-none">WhiteKit</h1>
+          <h1 className="text-[4.5rem] leading-[0.9] font-black uppercase tracking-tight">WhiteKit</h1>
           <p className="mt-2 inline-block bg-ink px-2 py-0.5 font-mono text-xs font-bold text-canvas">
             CONTROL_SURFACE // RESIDENCY_THEME
           </p>
