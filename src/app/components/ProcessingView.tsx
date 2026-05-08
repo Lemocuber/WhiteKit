@@ -43,7 +43,7 @@ export function ProcessingView({
   return (
     <div className="flex h-full flex-col z-10">
       <h2 className="mb-8 flex items-baseline text-5xl font-black uppercase tracking-tight">
-        {processType === 'install' ? '正在安装工具' : '正在移除工具'}
+        {processType === 'install' ? '安装项目' : '卸载项目'}
       </h2>
 
       <div
@@ -74,7 +74,7 @@ export function ProcessingView({
                 <div className="flex-1">
                   <h3 className="text-2xl font-black uppercase tracking-tight">{tool.name}</h3>
                   <p className="mt-1 font-mono text-xs font-bold">
-                    {didFail ? '失败' : isDone ? '完成' : isCurrent ? '处理中' : '队列中等待'}
+                    {didFail ? '失败' : isDone ? '完成' : isCurrent ? '处理中' : '等待中'}
                   </p>
                 </div>
                 {(didFail || isDone || isCurrent) && (
@@ -113,7 +113,7 @@ export function ProcessingView({
           {isComplete && (
             <div className="flex flex-col items-center gap-4 pt-4 mb-12">
               <p className="text-center font-mono text-sm font-black uppercase tracking-widest">
-                {completedTasks.length} 个{processType === 'install' ? '已安装' : '已移除'}，{failedTasks.length} 个失败
+                {processType === 'install' ? '已安装' : '已卸载'} *{completedTasks.length}，失败 *{failedTasks.length}
               </p>
               <div className={hoverHitboxClasses}>
                 <button
@@ -121,7 +121,7 @@ export function ProcessingView({
                   onClick={onOkay}
                   className={`min-w-[180px] border-4 border-ink bg-accent-lime px-10 py-4 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
                 >
-                  知道了
+                  确认
                 </button>
               </div>
             </div>

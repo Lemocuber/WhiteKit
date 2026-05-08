@@ -208,7 +208,7 @@ export function useToolProcessManager(runCommand: ShellRunner = runShell) {
     canInstall,
     canUninstall,
     installText: canInstall ? `安装 (${selectedMissingCount})` : '安装',
-    removeText: canUninstall ? `移除 (${selectedInstalledCount})` : '移除',
+    removeText: canUninstall ? `卸载 (${selectedInstalledCount})` : '卸载',
     handleToolToggle,
     startProcess,
     dismissProcessView,

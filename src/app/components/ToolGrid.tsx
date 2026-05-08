@@ -42,9 +42,9 @@ export function ToolGrid({
           </button>
         </div>
         <div>
-          <h1 className="text-6xl leading-[0.9] font-black uppercase tracking-tight">小白箱</h1>
+          <h1 className="text-6xl leading-[0.9] font-black uppercase tracking-tight">小白箱 WhiteKit</h1>
           <p className="mt-2 inline-block bg-ink px-2 py-0.5 font-mono text-xs font-bold text-canvas">
-            开发环境整理台 // WhiteKit
+            开发环境配置 // 冷启动工具箱
           </p>
         </div>
       </header>
@@ -121,8 +121,8 @@ function getHeaderFilterPresentation(filter: ToolFilter) {
     return {
       classes: 'bg-accent-lime text-ink',
       iconClasses: '',
-      ariaLabel: '工具筛选：已安装。点击查看可安装工具。',
-      title: '已安装工具',
+      ariaLabel: '筛选：已安装。点击查看未安装',
+      title: '已安装',
     }
   }
 
@@ -130,16 +130,16 @@ function getHeaderFilterPresentation(filter: ToolFilter) {
     return {
       classes: 'bg-accent-magenta text-white',
       iconClasses: 'brightness-0 invert',
-      ariaLabel: '工具筛选：可安装。点击查看全部工具。',
-      title: '可安装工具',
+      ariaLabel: '筛选：未安装。点击查看全部',
+      title: '未安装',
     }
   }
 
   return {
     classes: 'bg-white text-ink',
     iconClasses: '',
-    ariaLabel: '工具筛选：全部。点击查看已安装工具。',
-    title: '全部工具',
+    ariaLabel: '筛选：全部。点击查看已安装',
+    title: '全部',
   }
 }
 

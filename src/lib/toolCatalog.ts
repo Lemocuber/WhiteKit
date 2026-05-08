@@ -47,7 +47,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'homebrew',
     name: 'Homebrew',
-    description: 'macOS 开发工具包管理器',
+    description: 'macOS 包管理器，环境安装的基建设施',
     platforms: ['macos'],
     detect: {
       macos: 'brew --version',
@@ -64,7 +64,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'winget',
     name: 'Winget',
-    description: 'Windows 开发工具包管理器',
+    description: 'Windows 包管理器，环境安装的基建设施',
     platforms: ['windows'],
     detect: {
       windows: 'winget --version',
@@ -81,7 +81,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'nodejs',
     name: 'Node.js',
-    description: '用于后端开发的 JavaScript 运行时',
+    description: 'AI 时代下，红利吃满的脚本语言之神',
     detect: {
       macos: 'node --version',
       windows: 'node --version',
@@ -104,7 +104,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'python',
     name: 'Python',
-    description: '高级编程语言',
+    description: '在特定领域仍有优势区间的老牌脚本语言',
     detect: {
       macos: 'python3 --version',
       windows: 'python --version',
@@ -127,7 +127,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'git',
     name: 'Git',
-    description: '分布式版本控制系统',
+    description: '养活 Github 的经典版本控制系统',
     detect: {
       macos: 'git --version',
       windows: 'git --version',
@@ -150,7 +150,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'claude',
     name: 'Claude Code',
-    description: 'Anthropic 的智能编程 CLI',
+    description: '@Anthropic // 可能是有史以来最强大的 AI 开发工具，行业唯一标杆真神',
     detect: {
       macos: 'claude --version',
       windows: 'claude --version',
@@ -169,7 +169,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'codex',
     name: 'Codex',
-    description: 'OpenAI 的智能编程 CLI',
+    description: '@OpenAI // 更简洁，更轻量，但功能完善度较低，可以作为牛马使用',
     detect: {
       macos: 'codex --version',
       windows: 'codex --version',
@@ -188,7 +188,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'gemini',
     name: 'Gemini CLI',
-    description: 'Google 的智能编程 CLI',
+    description: '@Google // 如果送会员还算可堪一用，前端审美尚可',
     detect: {
       macos: 'gemini --version',
       windows: 'gemini --version',
@@ -207,7 +207,7 @@ const toolCatalogSources: ToolCatalogSource[] = [
   {
     id: 'openclaw',
     name: 'OpenClaw',
-    description: '多通道 AI 网关 CLI',
+    description: '不知道，总之就是很出圈，本地更建议直接用 Claude Code',
     detect: {
       macos: 'openclaw --version',
       windows: 'openclaw --version',

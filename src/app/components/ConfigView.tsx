@@ -70,7 +70,7 @@ export function ConfigView({
           ) : (
             <>
               <label className="flex flex-col gap-2">
-                <span className="font-mono text-xs font-black uppercase tracking-widest">Base URL 地址</span>
+                <span className="font-mono text-xs font-black uppercase tracking-widest">Base URL</span>
                 <input
                   type="text"
                   value={baseUrl}
@@ -90,7 +90,7 @@ export function ConfigView({
               </label>
 
               <label className="flex flex-col gap-2">
-                <span className="font-mono text-xs font-black uppercase tracking-widest">模型（可选）</span>
+                <span className="font-mono text-xs font-black uppercase tracking-widest">模型（非必填）</span>
                 <input
                   type="text"
                   value={model}
@@ -141,7 +141,7 @@ export function ConfigView({
                       onClick={onDismissError}
                       className={`min-w-[180px] border-4 border-ink bg-accent-lime px-10 py-4 mb-12 text-lg font-black uppercase tracking-widest shadow-brutal ${buttonInteractiveClasses}`}
                     >
-                      知道了
+                      确认
                     </button>
                   </div>
                 ) : (

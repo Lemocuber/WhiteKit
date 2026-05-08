@@ -44,10 +44,10 @@ export function Sidebar({
       ? 'bg-accent-red text-white'
       : 'bg-white text-ink'
   const networkLabel = networkState === 'online'
-    ? '系统在线'
+    ? '连接正常'
     : networkState === 'offline'
       ? '网络异常'
-      : '连接中'
+      : '正在连接'
   const isActionLocked = isProcessViewOpen || isConfigViewOpen || isSavingConfig
 
   const handleTerminalClick = () => {
@@ -84,7 +84,7 @@ export function Sidebar({
           ) : (
             <div className="flex min-h-[128px] flex-col border-4 border-ink bg-white p-3 shadow-brutal">
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-md font-black uppercase tracking-widest">网速</span>
+                <span className="text-md font-black uppercase tracking-widest">流量</span>
                 <span className="text-md font-mono font-black">
                   {networkState === 'online' ? currentSpeedLabel : '...'}
                 </span>
@@ -123,7 +123,7 @@ export function Sidebar({
                     : 'cursor-not-allowed border-gray-400 bg-gray-200 text-gray-400'
               }`}
             >
-              {isRunningProcess && processType === 'remove' ? `移除中${dots}` : removeText}
+              {isRunningProcess && processType === 'remove' ? `卸载中${dots}` : removeText}
             </button>
           </div>
 
