@@ -484,11 +484,24 @@ function quotePosixValue(value: string): string {
 }
 
 function powershellCommand(script: string): string {
-  return `powershell -NoProfile -Command "${script.replace(/"/g, '\\"')}"`
+  return `powershell -NoProfile -EncodedCommand ${bytesToBase64(stringToUtf16LeBytes(script))}`
 }
 
 function escapePowerShellSingleQuoted(value: string): string {
   return value.replace(/'/g, "''")
+}
+
+function stringToUtf16LeBytes(value: string): Uint8Array {
+  const bytes = new Uint8Array(value.length * 2)
+
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index)
+
+    bytes[index * 2] = code & 0xff
+    bytes[index * 2 + 1] = code >> 8
+  }
+
+  return bytes
 }
 
 function bytesToBase64(bytes: Uint8Array): string {

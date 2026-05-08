@@ -350,6 +350,47 @@ requires_openai_auth = true
 `, 'macos')))
 })
 
+test('windows file commands use encoded PowerShell to survive cmd shell quoting', () => {
+  const paths = getToolConfigPaths('codex', 'windows')
+  const readCommand = readFileCommand(paths.authJson!, 'windows')
+  const writeCommand = writeFileCommand(paths.authJson!, `{"quote":"hello \\"cmd\\""}\n`, 'windows')
+
+  assert.match(readCommand, /^powershell -NoProfile -EncodedCommand [A-Za-z0-9+/=]+$/)
+  assert.equal(
+    decodeEncodedPowerShell(readCommand),
+    `$p=[Environment]::ExpandEnvironmentVariables('%USERPROFILE%\\.codex\\auth.json');if(Test-Path -LiteralPath $p -PathType Leaf){Get-Content -LiteralPath $p -Raw -Encoding utf8}`,
+  )
+
+  assert.match(writeCommand, /^powershell -NoProfile -EncodedCommand [A-Za-z0-9+/=]+$/)
+  assert.match(decodeEncodedPowerShell(writeCommand), /^\$p=\[Environment\]::ExpandEnvironmentVariables/)
+  assert.match(decodeEncodedPowerShell(writeCommand), /Set-Content -LiteralPath \$p -Value \$c -Encoding utf8 -NoNewline$/)
+})
+
+test('saveToolConfig uses encoded Windows file commands for writes', async () => {
+  const paths = getToolConfigPaths('claude', 'windows')
+  const commands: string[] = []
+
+  await saveToolConfig('claude', claudeInput, async (command) => {
+    commands.push(command)
+
+    return shellResult('', '', 0)
+  }, 'windows')
+
+  assert.deepEqual(commands, [
+    makeDirCommand(paths.dir, 'windows'),
+    readFileCommand(paths.settingsJson!, 'windows'),
+    writeFileCommand(paths.settingsJson!, `{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "sk-whitekit",
+    "ANTHROPIC_BASE_URL": "https://llm.whitekit.test/v1"
+  },
+  "model": "opus-4.6"
+}
+`, 'windows'),
+  ])
+  assert.ok(commands.every((command) => command.startsWith('powershell -NoProfile -EncodedCommand ')))
+})
+
 test('empty API key and invalid base URL are rejected', () => {
   const errors = getToolConfigValidationErrors({ baseUrl: 'ftp://example.com', apiKey: '', model: '' })
 
@@ -363,4 +404,12 @@ test('empty API key and invalid base URL are rejected', () => {
 
 function shellResult(stdout: string, stderr: string, exitCode: number): ShellResult {
   return { stdout, stderr, exitCode }
+}
+
+function decodeEncodedPowerShell(command: string): string {
+  const encoded = command.split(' ').at(-1)
+
+  assert.ok(encoded)
+
+  return Buffer.from(encoded, 'base64').toString('utf16le')
 }
