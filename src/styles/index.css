@@ -41,3 +41,23 @@ body {
 #root {
   min-height: 100vh;
 }
+
+.top-dash-separator {
+  position: relative;
+}
+
+.top-dash-separator::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-image: linear-gradient(
+    to right,
+    var(--color-ink) 0 5px,
+    transparent 5px 9px
+  );
+  background-size: 9px 2px;
+  background-repeat: space no-repeat;
+}

@@ -94,7 +94,7 @@ export function Sidebar({
                   {networkState === 'online' ? currentSpeedLabel : '...'}
                 </span>
               </div>
-              <div className="h-16 overflow-hidden border-t-2 border-dashed border-ink pt-2">
+              <div className="top-dash-separator h-16 overflow-hidden pt-2">
                 <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-full w-full overflow-visible">
                   <polyline
                     ref={polylineRef}
@@ -167,7 +167,7 @@ export function Sidebar({
           </div>
         </div>
 
-        <div className="border-t-2 border-dashed border-ink pt-4">
+        <div className="top-dash-separator pt-4">
           <div className={hoverHitboxClasses}>
             <button
               type="button"
