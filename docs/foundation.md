@@ -22,7 +22,7 @@ WhiteKit is a desktop app for painless dev environment maintenance across tools 
 - Platform package manager bootstrap commands use `!SUDO`; normal `brew install` and `winget install` package commands remain non-elevated and rely on their package manager or installer to request any further privileges
 - GitHub Actions builds macOS and Windows test artifacts on pushes to `dev`; macOS artifacts ship as a zipped unsigned `WhiteKit.app`, Windows artifacts ship as a zipped portable `whitekit.exe`
 - Tool logos live in `src/assets/tools`; the WhiteKit mark lives in `public/brand/whitekit.svg` and doubles as the favicon
-- Native desktop app icons are generated into `src-tauri/icons/` from `public/brand/whitekit-native-icon.svg`, which places the existing WhiteKit SVG on an inset macOS-style continuous-rounded white desktop icon tile with transparent outer padding; CI/native builds depend on those generated files being committed
+- Native desktop app icons are generated into `src-tauri/icons/` from split platform sources in `public/brand/`: macOS keeps the inset continuous-rounded white desktop tile with transparent outer padding, while Windows uses the same rounded tile without the macOS-only padding; both use a slightly enlarged `public/brand/whitekit.svg` mark and CI/native builds depend on those generated files being committed
 - Tool catalog and selection/filter model live in `src/lib/tools.ts`, with platform command metadata in `src/lib/toolCatalog.ts`
 - App shell lives in `src/app/App.tsx`; real process lifecycle and telemetry live in `src/app/hooks`, and the main screen sections live in `src/app/components`
 - Default native window size is `980x700`, with matching minimum size
