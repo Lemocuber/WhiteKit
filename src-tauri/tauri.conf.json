@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "WhiteKit",
-  "version": "0.0.0",
-  "identifier": "com.whitekit.app",
+  "version": "1.0.0",
+  "identifier": "icu.lemoc.whitekit",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "WhiteKit",
+        "title": "小白箱",
         "width": 985,
         "height": 705,
         "minWidth": 985,
@@ -32,6 +32,9 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": "all"
+    "targets": "all",
+    "macOS": {
+      "infoPlist": "Info.plist"
+    }
   }
 }
