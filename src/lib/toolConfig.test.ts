@@ -304,7 +304,7 @@ test('windows file commands use encoded PowerShell to survive cmd shell quoting'
 
   assert.match(writeCommand, /^powershell -NoProfile -EncodedCommand [A-Za-z0-9+/=]+$/)
   assert.match(decodeEncodedPowerShell(writeCommand), /^\$p=\[Environment\]::ExpandEnvironmentVariables/)
-  assert.match(decodeEncodedPowerShell(writeCommand), /Set-Content -LiteralPath \$p -Value \$c -Encoding utf8 -NoNewline$/)
+  assert.match(decodeEncodedPowerShell(writeCommand), /\[IO\.File\]::WriteAllText\(\$p,\$c,\[Text\.UTF8Encoding\]::new\(\$false\)\)$/)
 })
 
 test('saveToolConfig uses encoded Windows file commands for writes', async () => {

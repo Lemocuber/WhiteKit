@@ -128,7 +128,7 @@ export function makeDirCommand(dir: string, platform = detectToolPlatform()): st
 export function writeFileCommand(path: string, content: string, platform = detectToolPlatform()): string {
   if (platform === 'windows') {
     return powershellCommand(
-      `$p=[Environment]::ExpandEnvironmentVariables('${escapePowerShellSingleQuoted(path)}');$c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${bytesToBase64(new TextEncoder().encode(content))}'));Set-Content -LiteralPath $p -Value $c -Encoding utf8 -NoNewline`,
+      `$p=[Environment]::ExpandEnvironmentVariables('${escapePowerShellSingleQuoted(path)}');$c=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${bytesToBase64(new TextEncoder().encode(content))}'));[IO.File]::WriteAllText($p,$c,[Text.UTF8Encoding]::new($false))`,
     )
   }
 
@@ -311,10 +311,12 @@ async function runChecked(command: string, runShell: ShellRunner, errorPrefix: s
 }
 
 function parseJsonObject(content: string, label: string): Record<string, unknown> {
-  if (!content.trim()) return {}
+  const normalized = stripBom(content)
+
+  if (!normalized.trim()) return {}
 
   try {
-    const parsed: unknown = JSON.parse(content)
+    const parsed: unknown = JSON.parse(normalized)
 
     if (isPlainObject(parsed)) return parsed
   } catch {
@@ -329,7 +331,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 }
 
 function normalizeTomlLines(content: string): string[] {
-  const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+  const normalized = stripBom(content).replace(/\r\n/g, '\n').replace(/\r/g, '\n')
 
   return normalized.endsWith('\n')
     ? normalized.slice(0, -1).split('\n')
@@ -441,6 +443,10 @@ function parseTomlString(value: string): string {
 
 function tomlString(value: string): string {
   return JSON.stringify(value)
+}
+
+function stripBom(value: string): string {
+  return value.charCodeAt(0) === 0xfeff ? value.slice(1) : value
 }
 
 function quotePosixPath(path: string): string {
