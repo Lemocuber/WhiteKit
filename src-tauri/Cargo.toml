@@ -1,6 +1,6 @@
 [package]
 name = "whitekit"
-version = "1.0.0"
+version = "1.0.1"
 description = "WhiteKit desktop shell"
 authors = ["WhiteKit"]
 edition = "2021"
