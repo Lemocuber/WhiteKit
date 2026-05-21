@@ -23,6 +23,13 @@ jobs:
           - name: Windows
             os: windows-latest
             artifact: whitekit-windows
+            target: x86_64-pc-windows-msvc
+            executable: src-tauri/target/x86_64-pc-windows-msvc/release/whitekit.exe
+          - name: Windows ARM
+            os: windows-latest
+            artifact: whitekit-windows-arm
+            target: aarch64-pc-windows-msvc
+            executable: src-tauri/target/aarch64-pc-windows-msvc/release/whitekit.exe
 
     steps:
       - name: Checkout
@@ -35,7 +42,14 @@ jobs:
           cache: npm
 
       - name: Set up Rust
+        if: runner.os == 'macOS'
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Set up Rust target
+        if: runner.os == 'Windows'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
 
       - name: Install dependencies
         run: npm ci
@@ -52,7 +66,7 @@ jobs:
 
       - name: Build Windows portable executable
         if: runner.os == 'Windows'
-        run: npx tauri build --no-bundle --ci
+        run: npx tauri build --no-bundle --ci --target ${{ matrix.target }}
 
       - name: Package macOS artifact
         if: runner.os == 'macOS'
@@ -63,7 +77,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          Compress-Archive -Path src-tauri/target/release/whitekit.exe -DestinationPath "${{ matrix.artifact }}.zip"
+          Compress-Archive -Path ${{ matrix.executable }} -DestinationPath "${{ matrix.artifact }}.zip"
 
       - name: Upload macOS artifact
         if: runner.os == 'macOS'
